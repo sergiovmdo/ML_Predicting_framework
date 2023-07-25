@@ -19,3 +19,5 @@ class MainWindow(QMainWindow):
 app = QApplication(sys.argv)
 w = MainWindow()
 app.exec()
+
+print('hello')
