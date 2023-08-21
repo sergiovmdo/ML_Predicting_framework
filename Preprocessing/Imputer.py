@@ -13,6 +13,9 @@ class Imputer():
         if technique == 'simple_imputer':
             return self.simple_imputer()
 
+        else:
+            return dataframe
+
     def simple_imputer(self, dataframe):
         imputer = SimpleImputer(strategy='mean')
         imputed_df = imputer.fit_transform(dataframe)

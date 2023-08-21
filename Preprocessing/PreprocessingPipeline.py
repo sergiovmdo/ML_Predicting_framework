@@ -1,5 +1,7 @@
 import pandas as pd
 import DataCleaner
+from Preprocessing.DataTransformer import DataTransformer
+
 
 class PreprocessingPipeline:
     """
@@ -24,4 +26,10 @@ class PreprocessingPipeline:
 
 
     def run(self):
-        data_cleaner = DataCleaner(self.dataframe)
+        data_cleaner = DataCleaner(self.numerical_data, self.parameters)
+        self.numerical_data = DataCleaner.clean_data()
+
+        data_transformer = DataTransformer(self.numerical_data, self.categorical_data, self.parameters)
+        self.numerical_data, self.categorical_data = DataTransformer.transform_data()
+
+print('hello')

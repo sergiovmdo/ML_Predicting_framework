@@ -1,5 +1,7 @@
 import pandas as pd
-import Imputer, OutlierRemover
+
+import Imputer
+import OutlierRemover
 
 
 class DataCleaner:
@@ -18,11 +20,16 @@ class DataCleaner:
         self.remove_duplicates()
 
         self.imputer = Imputer()
-        self.outlier_remover = OutlierRemover()
 
+
+    """
+    This is the main function of the class that will perform the data cleaning
+    """
     def clean_data(self):
-        if 'imputation_technique' in self.parameters:
-            self.impute(self.parameters['imputation_technique'])
+        if 'imputer' in self.parameters:
+            self.dataframe = self.impute(self.parameters['imputer'])
+
+        return self.dataframe
 
     def remove_duplicates(self):
         self.dataframe = self.dataframe.drop_duplicates()
@@ -32,6 +39,3 @@ class DataCleaner:
 
     def impute(self, imputation_technique):
         return self.imputer.impute(self.dataframe, imputation_technique)
-
-    def remove_outliers(self, removal_technique):
-        return self.outlier_remover.remove_outliers(self.dataframe, removal_technique)

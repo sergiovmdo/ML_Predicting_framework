@@ -2,7 +2,7 @@ import DataCleaner
 from sklearn.ensemble import IsolationForest
 
 
-class OutlierRemover(DataCleaner):
+class OutlierRemover():
     """
     Subclass of DataCleaner that is in charge of detecting and removing the possible outliers that may exist in our
     original data.
