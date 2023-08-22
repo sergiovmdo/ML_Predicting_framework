@@ -1,5 +1,6 @@
 import pandas as pd
 import DataCleaner
+from Preprocessing.ClassBalancer import ClassBalancer
 from Preprocessing.DataTransformer import DataTransformer
 from Preprocessing.FeatureSelector import FeatureSelector
 
@@ -52,6 +53,10 @@ class PreprocessingPipeline:
             feature_selector = FeatureSelector()
             self.dataframe = feature_selector.select_features(self.dataframe, self.parameters['target'], self.parameters['feature_selector'],
                                                               self.parameters['num_features'])
+
+        if 'class_balancer' in self.parameters:
+            class_balancer = ClassBalancer()
+            self.dataframe = class_balancer.balance_classes(self.dataframe, self.parameters['target'], self.parameters['class_balancer'])
 
 
 
