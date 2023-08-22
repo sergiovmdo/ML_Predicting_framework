@@ -11,7 +11,7 @@ class Imputer():
 
     def impute(self, dataframe, technique):
         if technique == 'simple_imputer':
-            return self.simple_imputer()
+            return self.simple_imputer(dataframe)
 
         else:
             return dataframe

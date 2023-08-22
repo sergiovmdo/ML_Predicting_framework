@@ -1,6 +1,7 @@
 import pandas as pd
 import DataCleaner
 from Preprocessing.DataTransformer import DataTransformer
+from Preprocessing.FeatureSelector import FeatureSelector
 
 
 class PreprocessingPipeline:
@@ -26,10 +27,34 @@ class PreprocessingPipeline:
 
 
     def run(self):
+        # Data cleaning
         data_cleaner = DataCleaner(self.numerical_data, self.parameters)
         self.numerical_data = DataCleaner.clean_data()
 
+        # Data transforming
         data_transformer = DataTransformer(self.numerical_data, self.categorical_data, self.parameters)
         self.numerical_data, self.categorical_data = DataTransformer.transform_data()
+
+        ### FEATURE EXTRACTION ###
+
+        #TODO
+
+        ### FEATURE COMBINATION ###
+
+        #TODO
+
+        # Concatenate both dataframes
+        self.dataframe = pd.concat([self.numerical_data, self.categorical_data], ignore_index=True)
+
+        # Feature selection
+
+        if 'feature_selector' in self.parameters:
+            feature_selector = FeatureSelector()
+            self.dataframe = feature_selector.select_features(self.dataframe, self.parameters['target'], self.parameters['feature_selector'],
+                                                              self.parameters['num_features'])
+
+
+
+
 
 print('hello')
