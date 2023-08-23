@@ -1,14 +1,15 @@
 import pandas as pd
-import DataCleaner
-from Preprocessing.ClassBalancer import ClassBalancer
-from Preprocessing.DataTransformer import DataTransformer
-from Preprocessing.FeatureSelector import FeatureSelector
+from preprocessing.DataCleaner import DataCleaner
+from preprocessing.ClassBalancer import ClassBalancer
+from preprocessing.DataTransformer import DataTransformer
+from preprocessing.FeatureSelector import FeatureSelector
 
 
 class PreprocessingPipeline:
     """
     This is the pipeline that will be in charge of performing all the preprocessing steps.
     """
+
     def __init__(self, dataframe, parameters):
         self.categorical_data = None
         self.numerical_data = None
@@ -18,7 +19,6 @@ class PreprocessingPipeline:
         # We want to have two separate dataframes according to its data type so we can perform different operations on them
         self.split_by_data_type()
 
-
     def split_by_data_type(self):
         categorical_variables = self.dataframe.select_dtypes(include=['object', 'category']).columns.to_list()
         numerical_variables = list(filter(lambda x: x not in categorical_variables, self.dataframe.columns))
@@ -26,40 +26,40 @@ class PreprocessingPipeline:
         self.numerical_data = self.dataframe[numerical_variables]
         self.categorical_data = self.dataframe[categorical_variables]
 
-
     def run(self):
         # Data cleaning
         data_cleaner = DataCleaner(self.numerical_data, self.parameters)
-        self.numerical_data = DataCleaner.clean_data()
+        self.numerical_data = data_cleaner.clean_data()
 
         # Data transforming
         data_transformer = DataTransformer(self.numerical_data, self.categorical_data, self.parameters)
-        self.numerical_data, self.categorical_data = DataTransformer.transform_data()
+        self.numerical_data, self.categorical_data = data_transformer.transform_data()
+
 
         ### FEATURE EXTRACTION ###
 
-        #TODO
+        # TODO
 
         ### FEATURE COMBINATION ###
 
-        #TODO
+        # TODO
 
         # Concatenate both dataframes
-        self.dataframe = pd.concat([self.numerical_data, self.categorical_data], ignore_index=True)
+        self.dataframe = pd.concat([self.numerical_data.reset_index(drop=True), self.categorical_data.reset_index(drop=True)], axis=1)
+
+        self.dataframe = self.dataframe.dropna()
 
         # Feature selection
 
         if 'feature_selector' in self.parameters:
             feature_selector = FeatureSelector()
-            self.dataframe = feature_selector.select_features(self.dataframe, self.parameters['target'], self.parameters['feature_selector'],
+            self.dataframe = feature_selector.select_features(self.dataframe, self.parameters['target'],
+                                                              self.parameters['feature_selector'],
                                                               self.parameters['num_features'])
 
         if 'class_balancer' in self.parameters:
             class_balancer = ClassBalancer()
-            self.dataframe = class_balancer.balance_classes(self.dataframe, self.parameters['target'], self.parameters['class_balancer'])
+            self.dataframe = class_balancer.balance_classes(self.dataframe, self.parameters['target'],
+                                                            self.parameters['class_balancer'])
 
-
-
-
-
-print('hello')
+        return self.dataframe

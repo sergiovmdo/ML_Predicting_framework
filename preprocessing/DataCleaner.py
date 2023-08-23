@@ -1,7 +1,6 @@
 import pandas as pd
 
-import Imputer
-import OutlierRemover
+from preprocessing.Imputer import Imputer
 
 
 class DataCleaner:

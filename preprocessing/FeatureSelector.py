@@ -17,5 +17,6 @@ class FeatureSelector:
     def correlation(self, dataframe, target, num_features):
         correlations = dataframe.corr()[target].abs().sort_values(ascending=False)
         selected_features = correlations[1:num_features + 1].index.to_list()
+        selected_features = selected_features + [target]
 
         return dataframe[selected_features]

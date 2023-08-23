@@ -1,10 +1,8 @@
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
-import DataTransformer
 
-
-class Scaler(DataTransformer):
+class Scaler:
     """
     Subclass of DataTransformer that is in charge of scaling the original data.
     """
@@ -14,7 +12,7 @@ class Scaler(DataTransformer):
 
     def scale(self, dataframe, technique):
         if technique == 'min_max':
-            return self.min_max_scaler()
+            return self.min_max_scaler(dataframe)
 
         else:
             return dataframe

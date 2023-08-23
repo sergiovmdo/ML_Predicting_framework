@@ -1,5 +1,5 @@
-from Preprocessing.Encoder import Encoder
-from Preprocessing.Scaler import Scaler
+from preprocessing.Encoder import Encoder
+from preprocessing.Scaler import Scaler
 
 
 class DataTransformer:
@@ -8,6 +8,7 @@ class DataTransformer:
     including scaling and encoding. Each of this processes has its respective subclass that will inheritate from
     this one.
     """
+
     def __init__(self, numerical_dataframe, categorical_dataframe, parameters):
         self.numerical_dataframe = numerical_dataframe
         self.categorical_dataframe = categorical_dataframe
@@ -17,10 +18,10 @@ class DataTransformer:
         self.scaler = Scaler()
         self.encoder = Encoder()
 
-
     """
     This is the main function of the class that will deal with all the transformation to be performed
     """
+
     def transform_data(self):
         if 'scaler' in self.parameters:
             self.numerical_dataframe = self.scale(self.parameters['scaler'])
@@ -31,7 +32,7 @@ class DataTransformer:
         return self.numerical_dataframe, self.categorical_dataframe
 
     def scale(self, scaling_technique):
-        return self.scaler.scale(self.dataframe, scaling_technique)
+        return self.scaler.scale(self.numerical_dataframe, scaling_technique)
 
     def encode(self, encoding_technique):
-        return self.encoder.encode(self.dataframe, encoding_technique)
+        return self.encoder.encode(self.categorical_dataframe, encoding_technique)
