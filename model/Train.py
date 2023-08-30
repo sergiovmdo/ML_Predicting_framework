@@ -13,4 +13,6 @@ class Train:
             model = LogisticRegression(self.X_train, self.y_train)
             model, best_params = model.train()
 
-            return model, best_params
+            feature_importances = model.coef_[0]
+
+            return model, feature_importances, best_params
