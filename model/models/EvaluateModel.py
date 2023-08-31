@@ -1,4 +1,4 @@
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, roc_auc_score
 
 
 class EvaluateModel:
@@ -33,5 +33,9 @@ class EvaluateModel:
         # Calculate and store confusion matrix
         conf_matrix = confusion_matrix(self.y_test, y_pred)
         evaluation_results['confusion_matrix'] = conf_matrix
+
+        y_pred_proba = self.model.predict_proba(self.X_test)[:, 1]
+        auc = roc_auc_score(self.y_test, y_pred_proba)  # y_pred should be probability scores for positive class
+        evaluation_results['auc'] = auc
 
         return evaluation_results

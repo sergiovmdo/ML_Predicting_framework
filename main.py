@@ -1,7 +1,10 @@
 import sys
 import pandas as pd
 import ast
+
+from model.ModelPipeline import ModelPipeline
 from preprocessing.PreprocessingPipeline import PreprocessingPipeline
+
 
 def main():
     # Check if command-line arguments were provided
@@ -22,6 +25,7 @@ def main():
             print("The input is not a valid dictionary.")
     except (ValueError, SyntaxError):
         print("Error: Could not convert the input string to a dictionary.")
+        return
 
     # We read our data from the path extracted from arg1
     dataframe = pd.read_csv(arg1, index_col=0)
@@ -30,6 +34,11 @@ def main():
 
     preprocessing_pipeline = PreprocessingPipeline(dataframe, parameters)
     dataframe = preprocessing_pipeline.run()
+
+    ### MODEL TRAINING AND TESTING ###
+
+    model_pipeline = ModelPipeline(dataframe, parameters)
+    model_pipeline.run()
 
 
 if __name__ == "__main__":

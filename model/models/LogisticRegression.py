@@ -1,4 +1,5 @@
 from sklearn.model_selection import GridSearchCV
+from sklearn.linear_model import LogisticRegression as LogisticRegressionModel
 
 
 class LogisticRegression:
@@ -9,16 +10,14 @@ class LogisticRegression:
         'max_iter': [300] # Maximum number of iterations for the solver to converge
     }
 
-    def __int__(self, X, y):
+    def __init__(self, X, y):
         self.X = X
         self.y = y
 
         self.best_score = 0.0
 
-        self.train()
-
     def train(self):
-        model = LogisticRegression()
+        model = LogisticRegressionModel()
 
         grid_search = GridSearchCV(model, self.param_grid, cv=15, scoring='roc_auc')
         grid_search.fit(self.X, self.y)
@@ -28,10 +27,10 @@ class LogisticRegression:
             self.best_parameters = grid_search.best_params_
 
             self.modify_grid_params()
-            self.train()
+            return self.train()
 
         else:
-            return model, self.best_parameters
+            return grid_search, self.best_parameters, grid_search.best_estimator_.coef_
 
     def modify_grid_params(self):
         pass

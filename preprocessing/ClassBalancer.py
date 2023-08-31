@@ -24,6 +24,6 @@ class ClassBalancer:
         X_resampled, y_resampled = oversampler.fit_resample(dataframe.drop(target, axis=1), dataframe[target])
 
         dataframe_resampled = X_resampled.copy()
-        dataframe_resampled['target'] = y_resampled
+        dataframe_resampled[target] = y_resampled
 
         return dataframe_resampled
