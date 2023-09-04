@@ -19,6 +19,8 @@ class LogisticRegression:
     def train(self):
         model = LogisticRegressionModel()
 
+        feature_names = self.X.columns.tolist()
+
         grid_search = GridSearchCV(model, self.param_grid, cv=15, scoring='roc_auc')
         grid_search.fit(self.X, self.y)
 
@@ -26,11 +28,19 @@ class LogisticRegression:
             self.best_score = grid_search.best_score_
             self.best_parameters = grid_search.best_params_
 
+            coefficients = grid_search.best_estimator_.coef_[0]
+            coefficients_with_names = {}
+
+            for i, feature in enumerate(feature_names):
+                coefficients_with_names[feature] = coefficients[i]
+
+            self.coefficients = coefficients_with_names
+
             self.modify_grid_params()
             return self.train()
 
         else:
-            return grid_search, self.best_parameters, grid_search.best_estimator_.coef_
+            return grid_search, self.best_parameters, self.coefficients
 
     def modify_grid_params(self):
         pass

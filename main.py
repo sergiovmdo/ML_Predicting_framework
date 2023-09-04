@@ -1,6 +1,7 @@
 import sys
 import pandas as pd
 import ast
+import json
 
 from model.ModelPipeline import ModelPipeline
 from preprocessing.PreprocessingPipeline import PreprocessingPipeline
@@ -18,17 +19,21 @@ def main():
 
     # We need to convert our arg2 into a dictionary of parameters
     try:
-        parameters = ast.literal_eval(arg2)
+        with open(arg2, "r") as json_file:
+            parameters = json.load(json_file)
         if isinstance(parameters, dict):
             print("Converted dictionary:", parameters)
         else:
             print("The input is not a valid dictionary.")
     except (ValueError, SyntaxError):
-        print("Error: Could not convert the input string to a dictionary.")
-        return
+        raise ValueError("Could not convert the parameters file to a dictionary.")
 
-    # We read our data from the path extracted from arg1
-    dataframe = pd.read_csv(arg1, index_col=0)
+    # We read the data from our first parameter
+    try:
+        # We read our data from the path extracted from arg1
+        dataframe = pd.read_csv(arg1, index_col=0)
+    except (ValueError, SyntaxError):
+        raise ValueError("Data has to be in a comma separated csv format")
 
     ### PREPROCESSING ###
 
