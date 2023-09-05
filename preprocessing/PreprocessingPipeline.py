@@ -11,6 +11,13 @@ class PreprocessingPipeline:
     """
 
     def __init__(self, dataframe, parameters):
+        """
+        Initialize a new instance of
+
+        Args:
+            dataframe (dataframe): Data.
+            parameters (dictionary): parameters dictionary that contain all the information related to the process.
+        """
         self.categorical_data = None
         self.numerical_data = None
         self.dataframe = dataframe
@@ -20,6 +27,9 @@ class PreprocessingPipeline:
         self.split_by_data_type()
 
     def split_by_data_type(self):
+        """
+        Splits the data in categorical and numerical and assigns it to the
+        """
         categorical_variables = self.dataframe.select_dtypes(include=['object', 'category']).columns.to_list()
         numerical_variables = list(filter(lambda x: x not in categorical_variables, self.dataframe.columns))
 

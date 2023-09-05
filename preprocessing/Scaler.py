@@ -8,6 +8,12 @@ class Scaler:
     """
 
     def __init__(self):
+        """
+        Initialize a new instance of
+
+        Args:
+
+        """
         pass
 
     def scale(self, dataframe, technique):

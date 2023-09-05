@@ -4,4 +4,10 @@ class FeatureExtractor:
     by using the already reported features.
     """
     def __init__(self):
+        """
+        Initialize a new instance of
+
+        Args:
+
+        """
         pass

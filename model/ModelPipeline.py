@@ -5,11 +5,27 @@ from model.models.EvaluateModel import EvaluateModel
 from model.Output import Output
 
 class ModelPipeline:
+    """
+    Pipeline in charge of running all the train/test/evaluation procedure.
+    """
     def __init__(self, dataframe, parameters):
+        """
+        Initialize a new instance of ModelPipeline
+
+        Args:
+            dataframe (dataframe): Complete data.
+            parameters (dictionary): Set of parameters that contain all the needed information for
+            running the pipeline.
+
+        """
         self.dataframe = dataframe
         self.parameters = parameters
 
     def run(self):
+        """
+        Splits the data in train/test, trains the model for finally testing and generate a file that will contain all
+        the information related to the process.
+        """
         X_train, X_test, y_train, y_test = train_test_split(self.dataframe.drop(self.parameters['target'], axis=1),
                                                             self.dataframe[self.parameters['target']], test_size=0.3)
 

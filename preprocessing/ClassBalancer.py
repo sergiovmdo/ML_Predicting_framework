@@ -7,10 +7,18 @@ class ClassBalancer:
     including oversampling and undersampling techniques.
     """
 
-    def __init__(self):
-        pass
-
     def balance_classes(self, dataframe, target, technique):
+        """
+        Depending on the balancing technique calls the implementation of it.
+
+        Args:
+            dataframe (dataframe): Data
+            target (string): target variable name.
+            technique (string): technique to be used in the balancing procedure.
+
+        Returns:
+            Returns the balanced dataframe.
+        """
         if technique == 'smote':
             return self.smote(dataframe, target)
 
@@ -18,6 +26,16 @@ class ClassBalancer:
             return dataframe
 
     def smote(self, dataframe, target):
+        """
+        Synthetic Minority Oversampling Technique implementation.
+
+        Args:
+            dataframe (dataframe): Data.
+            target (string) target variable name.
+
+        Returns:
+            Returns the balanced dataframe.
+        """
         oversampler = SMOTE()
 
         # Apply SMOTE oversampling to the dataset

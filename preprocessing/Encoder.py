@@ -3,14 +3,16 @@ import pandas as pd
 
 class Encoder():
     """
-    Subclass of DataTransformer that is in charge of encoding categorical variables into a format that will be
-    readable for the ML algorithm.
+    Class in charge of encoding categorical variables into a format that will be readable for the ML algorithm.
     """
 
-    def __init__(self):
-        pass
-
     def encode(self, dataframe, technique):
+        """
+        Invokes the encoding technique that was set via parameters.
+
+        Returns:
+            The encoded dataframe.
+        """
         if technique == 'one_hot':
             return self.one_hot_encoder(dataframe)
 
@@ -18,6 +20,12 @@ class Encoder():
             return dataframe
 
     def one_hot_encoder(self, dataframe):
+        """
+        Implementation of one hot encoding.
+
+        Returns:
+            The encoded dataframe.
+        """
         encoded_df = pd.DataFrame()
         for c in dataframe.columns:
             encoded_cols = pd.get_dummies(dataframe[c], prefix=c, drop_first=True)
