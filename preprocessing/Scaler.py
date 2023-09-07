@@ -1,30 +1,31 @@
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 
 class Scaler:
     """
-    Subclass of DataTransformer that is in charge of scaling the original data.
+    Class that is in charge of scaling the original data.
     """
-
-    def __init__(self):
+    def scale(self, dataframe, technique):
         """
-        Initialize a new instance of
+        Scales the dataframe using a particular technique.
 
         Args:
+            dataframe (dataframe): Data.
+            technique (string): The technique used to scale the dataframe.
 
+        Returns:
+            The scaled dataframe.
         """
-        pass
-
-    def scale(self, dataframe, technique):
         if technique == 'min_max':
-            return self.min_max_scaler(dataframe)
+            return self.transform(MinMaxScaler(), dataframe)
+        elif technique == 'z_score':
+            return self.transform(StandardScaler(), dataframe)
 
         else:
             return dataframe
 
-    def min_max_scaler(self, dataframe):
-        scaler = MinMaxScaler()
-        scaled_df = scaler.fit_transform(dataframe)
+    def transform(self, scaler, dataframe):
+        scaled_dataframe = scaler.fit_transform(dataframe)
 
-        return pd.DataFrame(scaled_df, columns=dataframe.columns)
+        return pd.DataFrame(scaled_dataframe, columns=dataframe.columns)

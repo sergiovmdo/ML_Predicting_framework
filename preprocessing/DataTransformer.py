@@ -59,4 +59,4 @@ class DataTransformer:
         Returns:
             The encoded dataframe.
         """
-        return self.encoder.encode(self.categorical_dataframe, encoding_technique)
+        return self.encoder.encode(self.categorical_dataframe, encoding_technique, self.parameters['target'])

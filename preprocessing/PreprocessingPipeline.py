@@ -37,6 +37,12 @@ class PreprocessingPipeline:
         self.categorical_data = self.dataframe[categorical_variables]
 
     def run(self):
+        """
+        Main method of the pipeline, where it goes through all the preprocessing steps.
+
+        Returns:
+            The preprocessed dataframe.
+        """
         # Data cleaning
         data_cleaner = DataCleaner(self.numerical_data, self.parameters)
         self.numerical_data = data_cleaner.clean_data()
