@@ -5,14 +5,18 @@ from preprocessing.Imputer import Imputer
 
 class DataCleaner:
     """
-    Parent class that will deal with the first step of the pipeline. Standardization of columns, duplicate checking,
-    data formatting, imputation, and outlier removal are performed in this step.
-
-    There are two classes that inheritate from this class, Imputer and OutlierRemover that will be in charge of this
-    particular tasks of the pipeline.
+    Standardization of columns, duplicate checking, data formatting, imputation, and outlier removal are performed
+    in this Class.
     """
 
     def __init__(self, dataframe, parameters):
+        """
+        Initialize a new instance of DataCleaner
+
+        Args:
+            dataframe (dataframe): Data.
+            parameters (dictionary): parameters dictionary that contain all the information related to the process.
+        """
         # We attempt to convert columns to its proper type
         self.dataframe = dataframe.infer_objects()
         self.parameters = parameters
@@ -21,20 +25,33 @@ class DataCleaner:
         self.imputer = Imputer()
 
 
-    """
-    This is the main function of the class that will perform the data cleaning
-    """
+
     def clean_data(self):
+        """
+        This is the main function of the class that will perform the data cleaning procedure.
+
+        Returns:
+            The cleaned dataframe.
+        """
         if 'imputer' in self.parameters:
             self.dataframe = self.impute(self.parameters['imputer'])
 
         return self.dataframe
 
     def remove_duplicates(self):
+        """
+        Remove all the duplicated rows from the dataframe.
+        """
         self.dataframe = self.dataframe.drop_duplicates()
 
-    def get_dataframe(self):
-        return self.dataframe
-
     def impute(self, imputation_technique):
+        """
+        Calls the imputer in order to perform the imputation.
+
+        Args:
+            imputation_technique (string): Technique to be used.
+
+        Returns:
+            The imputed dataframe.
+        """
         return self.imputer.impute(self.dataframe, imputation_technique)

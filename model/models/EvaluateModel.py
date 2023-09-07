@@ -2,12 +2,32 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 
 class EvaluateModel:
+    """
+    Object that represents the evaluation module that performs all the operation relating the evaluation of the
+    model.
+    """
     def __init__(self, model, X_test, y_test):
+        """
+        Initialize a new instance of
+
+        Args:
+
+        """
         self.model = model
         self.X_test = X_test
         self.y_test = y_test
 
     def evaluate(self):
+        """
+        We use the trained model for predicting the part of the dataset that we kept for testing
+        purposes.
+
+        Once we get the predictions we compared against the truth in order to extract all the common metrics
+        used in Machine Learning: Accuracy, precision, recall, f1-score, AUC, and the confussion matrix.
+
+        Returns:
+            A dictionary containing all the results.
+        """
         # First of all we perform predictions
         y_pred = self.model.predict(self.X_test)
 

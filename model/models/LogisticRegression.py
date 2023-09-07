@@ -1,46 +1,40 @@
 from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression as LogisticRegressionModel
 
+from model.models.Model import Model
 
-class LogisticRegression:
+
+class LogisticRegression(Model):
+    """
+    Subclass of Model that will represent the implementation of a Logistic Regression, containing all the needed
+    information for the training of this model.
+    """
+
     param_grid = {
-        'C': [0.01, 0.1, 1, 10], # Regularization parameter
-        'penalty': ['l1', 'l2'], # Regularization type
-        'solver': ['liblinear', 'saga'], # Solver algorithms
-        'max_iter': [300] # Maximum number of iterations for the solver to converge
+        'C': [0.01, 0.1, 1, 10],  # Regularization parameter
+        'penalty': ['l1', 'l2'],  # Regularization type
+        'solver': ['liblinear', 'saga'],  # Solver algorithms
+        'max_iter': [300]  # Maximum number of iterations for the solver to converge
     }
 
     def __init__(self, X, y):
-        self.X = X
-        self.y = y
+        """
+        Initialize a new instance of LogisticRegression which is a subclass of the Model class which is also
+        instantiated inside this constructor.
 
-        self.best_score = 0.0
+        Args:
+            X (dataframe): Dataframe containing the training information for the model.
+            y (array): Array containing the training target variable.
+
+        """
+        Model.__init__(self, X, y, LogisticRegressionModel(), self.param_grid)
 
     def train(self):
-        model = LogisticRegressionModel()
+        """
+        Used for training the model, it just calls to the method in the superclass.
+        """
+        return super().train()
 
-        feature_names = self.X.columns.tolist()
 
-        grid_search = GridSearchCV(model, self.param_grid, cv=15, scoring='roc_auc')
-        grid_search.fit(self.X, self.y)
 
-        if grid_search.best_score_ > self.best_score:
-            self.best_score = grid_search.best_score_
-            self.best_parameters = grid_search.best_params_
 
-            coefficients = grid_search.best_estimator_.coef_[0]
-            coefficients_with_names = {}
-
-            for i, feature in enumerate(feature_names):
-                coefficients_with_names[feature] = coefficients[i]
-
-            self.coefficients = coefficients_with_names
-
-            self.modify_grid_params()
-            return self.train()
-
-        else:
-            return grid_search, self.best_parameters, self.coefficients
-
-    def modify_grid_params(self):
-        pass

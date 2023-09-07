@@ -4,4 +4,10 @@ class FeatureCombiner:
     any other linear combination and so on.
     """
     def __init__(self):
+        """
+        Initialize a new instance of
+
+        Args:
+
+        """
         pass
