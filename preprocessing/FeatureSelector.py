@@ -4,7 +4,13 @@ class FeatureSelector:
     that will be more useful to our predictive model.
     """
 
-    def select_features(self, dataframe, target, technique, num_features):
+    def __init__(self, dataframe, target, technique, num_features=None):
+        self.dataframe = dataframe
+        self.target = target
+        self.technique = technique
+        self.num_features = num_features
+
+    def select_features(self):
         """
         Invokes the appropriate feature selection method.
 
@@ -17,13 +23,13 @@ class FeatureSelector:
         Returns:
             The dataframe with only the selected variables.
         """
-        if technique == 'correlation':
-            return self.correlation(dataframe, target, num_features)
+        if self.technique == 'correlation':
+            return self.correlation()
 
         else:
-            return dataframe
+            return self.dataframe
 
-    def correlation(self, dataframe, target, num_features):
+    def correlation(self):
         """
         Implementation of correlation feature selection technique
 
@@ -32,8 +38,8 @@ class FeatureSelector:
             target (string): Name of the target variable.
             num_features (int): Number of features to be selected.
         """
-        correlations = dataframe.corr()[target].abs().sort_values(ascending=False)
-        selected_features = correlations[1:num_features + 1].index.to_list()
-        selected_features = selected_features + [target]
+        correlations = self.dataframe.corr()[self.target].abs().sort_values(ascending=False)
+        selected_features = correlations[1:self.num_features + 1].index.to_list()
+        selected_features = selected_features + [self.target]
 
-        return dataframe[selected_features]
+        return self.dataframe[selected_features]

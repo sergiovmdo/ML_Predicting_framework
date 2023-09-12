@@ -1,8 +1,9 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
+
 from model.Train import Train
 from model.models.EvaluateModel import EvaluateModel
-from model.Output import Output
+from model.OutputModule import Output
 
 class ModelPipeline:
     """
@@ -16,10 +17,10 @@ class ModelPipeline:
             dataframe (dataframe): Complete data.
             parameters (dictionary): Set of parameters that contain all the needed information for
             running the pipeline.
-
         """
         self.dataframe = dataframe
         self.parameters = parameters
+
 
     def run(self):
         """
@@ -27,7 +28,8 @@ class ModelPipeline:
         the information related to the process.
         """
         X_train, X_test, y_train, y_test = train_test_split(self.dataframe.drop(self.parameters['target'], axis=1),
-                                                            self.dataframe[self.parameters['target']], test_size=0.3)
+                                                            self.dataframe[self.parameters['target']], test_size=0.3,
+                                                            random_state=self.parameters['seed'])
 
         # We instantiate the training pipeline and we train the model
         training_pipeline = Train(X_train, y_train, self.parameters)
@@ -44,4 +46,4 @@ class ModelPipeline:
 
         # We generate a file containing all the details of this run
         output_generator = Output(self.parameters)
-        output_generator.write_parameters_to_file()
+        return output_generator.generate_dataframe()

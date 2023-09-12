@@ -51,7 +51,6 @@ class PreprocessingPipeline:
         data_transformer = DataTransformer(self.numerical_data, self.categorical_data, self.parameters)
         self.numerical_data, self.categorical_data = data_transformer.transform_data()
 
-
         ### FEATURE EXTRACTION ###
 
         # TODO
@@ -61,21 +60,22 @@ class PreprocessingPipeline:
         # TODO
 
         # Concatenate both dataframes
-        self.dataframe = pd.concat([self.numerical_data.reset_index(drop=True), self.categorical_data.reset_index(drop=True)], axis=1)
+        self.dataframe = pd.concat(
+            [self.numerical_data.reset_index(drop=True), self.categorical_data.reset_index(drop=True)], axis=1)
 
         self.dataframe = self.dataframe.dropna()
 
         # Feature selection
 
         if 'feature_selector' in self.parameters:
-            feature_selector = FeatureSelector()
-            self.dataframe = feature_selector.select_features(self.dataframe, self.parameters['target'],
-                                                              self.parameters['feature_selector'],
-                                                              self.parameters['num_features'])
+            feature_selector = FeatureSelector(self.dataframe, self.parameters['target'],
+                                               self.parameters['feature_selector'],
+                                               self.parameters['num_features'])
+            self.dataframe = feature_selector.select_features()
 
         if 'class_balancer' in self.parameters:
-            class_balancer = ClassBalancer()
-            self.dataframe = class_balancer.balance_classes(self.dataframe, self.parameters['target'],
-                                                            self.parameters['class_balancer'])
+            class_balancer = ClassBalancer(self.dataframe, self.parameters['target'],
+                                           self.parameters['class_balancer'], self.parameters['seed'])
+            self.dataframe = class_balancer.balance_classes()
 
         return self.dataframe
