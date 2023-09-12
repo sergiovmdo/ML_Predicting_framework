@@ -14,10 +14,10 @@ class LogisticRegression(Model):
         'C': [0.01, 0.1, 1, 10],  # Regularization parameter
         'penalty': ['l1', 'l2'],  # Regularization type
         'solver': ['liblinear', 'saga'],  # Solver algorithms
-        'max_iter': [300]  # Maximum number of iterations for the solver to converge
+        'max_iter': [3000]  # Maximum number of iterations for the solver to converge
     }
 
-    def __init__(self, X, y):
+    def __init__(self, X, y, seed):
         """
         Initialize a new instance of LogisticRegression which is a subclass of the Model class which is also
         instantiated inside this constructor.
@@ -25,9 +25,10 @@ class LogisticRegression(Model):
         Args:
             X (dataframe): Dataframe containing the training information for the model.
             y (array): Array containing the training target variable.
+            seed (int): Seed to be used in the LogisticRegression
 
         """
-        Model.__init__(self, X, y, LogisticRegressionModel(), self.param_grid)
+        Model.__init__(self, X, y, LogisticRegressionModel(random_state=seed), self.param_grid)
 
     def train(self):
         """

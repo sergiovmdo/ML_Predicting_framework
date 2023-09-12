@@ -2,9 +2,28 @@ import sys
 import pandas as pd
 import ast
 import json
+import itertools
+import copy
 
 from model.ModelPipeline import ModelPipeline
 from preprocessing.PreprocessingPipeline import PreprocessingPipeline
+
+
+def generate_combinations(json_obj, current_combination, combinations_list):
+    if not json_obj:
+        combinations_list.append(current_combination)
+        return
+
+    key, value = json_obj.popitem()
+
+    if isinstance(value, list):
+        for item in value:
+            new_combination = copy.deepcopy(current_combination)
+            new_combination[key] = item
+            generate_combinations(json_obj.copy(), new_combination, combinations_list)
+    else:
+        current_combination[key] = value
+        generate_combinations(json_obj, current_combination, combinations_list)
 
 
 def main():
@@ -35,15 +54,24 @@ def main():
     except (ValueError, SyntaxError):
         raise ValueError("Data has to be in a comma separated csv format")
 
-    ### PREPROCESSING ###
+    combinations = []
+    generate_combinations(parameters.copy(), {}, combinations)
 
-    preprocessing_pipeline = PreprocessingPipeline(dataframe, parameters)
-    dataframe = preprocessing_pipeline.run()
+    output_dataframe = pd.DataFrame()
+    # We iterate through all the possible parameter combinations.
+    for combination in combinations:
+        ### PREPROCESSING ###
 
-    ### MODEL TRAINING AND TESTING ###
+        preprocessing_pipeline = PreprocessingPipeline(dataframe, combination)
+        dataframe = preprocessing_pipeline.run()
 
-    model_pipeline = ModelPipeline(dataframe, parameters)
-    model_pipeline.run()
+        ### MODEL TRAINING AND TESTING ###
+
+        model_pipeline = ModelPipeline(dataframe, combination)
+        aux = model_pipeline.run()
+        output_dataframe = pd.concat([output_dataframe, aux], ignore_index=True)
+
+    output_dataframe.to_csv(parameters['output_file'])
 
 
 if __name__ == "__main__":

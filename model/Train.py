@@ -14,7 +14,6 @@ class Train:
             X_train (dataframe): training data.
             y_train (array): target array corresponding to training data.
             parameters (dictionary): contains all the needed parameters.
-
         """
         self.X_train = X_train
         self.y_train = y_train
@@ -32,7 +31,7 @@ class Train:
 
         """
         if self.parameters['model'] == 'logistic_regression':
-            model = LogisticRegression(self.X_train, self.y_train)
+            model = LogisticRegression(self.X_train, self.y_train, self.parameters['seed'])
             model = model.train()
             best_params = model.best_params_
 

@@ -35,7 +35,7 @@ class Model:
         grid_search = GridSearchCV(self.model, self.param_grid, cv=15, scoring='roc_auc')
         grid_search.fit(self.X, self.y)
 
-        if round(grid_search.best_score_, 4) > round(self.best_score, 4):
+        if round(grid_search.best_score_, 2) > round(self.best_score, 2):
             self.grid_search = grid_search
 
             self.best_score = grid_search.best_score_

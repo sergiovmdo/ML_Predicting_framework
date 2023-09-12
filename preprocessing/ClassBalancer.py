@@ -7,31 +7,41 @@ class ClassBalancer:
     including oversampling and undersampling techniques.
     """
 
-    def balance_classes(self, dataframe, target, technique):
+    def __init__(self, dataframe, target, technique, seed):
         """
-        Depending on the balancing technique calls the implementation of it.
+        Initialization of ClassBalancer class
 
         Args:
             dataframe (dataframe): Data
             target (string): target variable name.
             technique (string): technique to be used in the balancing procedure.
+            seed (int): seed to be used when balancing classes.
+        """
+        self.dataframe = dataframe
+        self.target = target
+        self.technique = technique
+        self.seed = seed
+
+    def balance_classes(self):
+        """
+        Depending on the balancing technique calls the implementation of it.
 
         Returns:
             Returns the balanced dataframe.
         """
-        if technique == 'smote':
-            return self.transform(SMOTE(), dataframe, target)
-        elif technique == 'random_oversampling':
-            return self.transform(RandomOverSampler(), dataframe, target)
+        if self.technique == 'smote':
+            return self.transform(SMOTE(random_state=self.seed))
+        elif self.technique == 'random_oversampling':
+            return self.transform(RandomOverSampler(random_state=self.seed))
 
         else:
-            return dataframe
+            return self.dataframe
 
-
-    def transform(self, balancer, dataframe, target):
-        X_resampled, y_resampled = balancer.fit_resample(dataframe.drop(target, axis=1), dataframe[target])
+    def transform(self, balancer):
+        X_resampled, y_resampled = balancer.fit_resample(self.dataframe.drop(self.target, axis=1),
+                                                         self.dataframe[self.target])
 
         dataframe_resampled = X_resampled.copy()
-        dataframe_resampled[target] = y_resampled
+        dataframe_resampled[self.target] = y_resampled
 
         return dataframe_resampled
