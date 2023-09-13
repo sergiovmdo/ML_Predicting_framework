@@ -1,6 +1,5 @@
 from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression as LogisticRegressionModel
-
 from model.models.Model import Model
 
 

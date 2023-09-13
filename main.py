@@ -1,12 +1,12 @@
 import sys
 import pandas as pd
-import ast
 import json
-import itertools
 import copy
-
+import time
 from model.ModelPipeline import ModelPipeline
 from preprocessing.PreprocessingPipeline import PreprocessingPipeline
+import multiprocessing
+from joblib import Parallel, delayed
 
 
 def generate_combinations(json_obj, current_combination, combinations_list):
@@ -24,6 +24,18 @@ def generate_combinations(json_obj, current_combination, combinations_list):
     else:
         current_combination[key] = value
         generate_combinations(json_obj, current_combination, combinations_list)
+
+
+def run_pipeline(dataframe, parameters):
+    ### PREPROCESSING ###
+
+    preprocessing_pipeline = PreprocessingPipeline(dataframe, parameters)
+    dataframe = preprocessing_pipeline.run()
+
+    ### MODEL TRAINING AND TESTING ###
+
+    model_pipeline = ModelPipeline(dataframe, parameters)
+    return model_pipeline.run()
 
 
 def main():
@@ -59,6 +71,16 @@ def main():
 
     output_dataframe = pd.DataFrame()
     # We iterate through all the possible parameter combinations.
+
+    num_cores = multiprocessing.cpu_count()
+
+    # if len(combinations) > 1:
+    #     results = Parallel(n_jobs=num_cores)(delayed(run_pipeline)(dataframe, combination) for combination in combinations)
+    #     output_dataframe = pd.concat(results, ignore_index=True)
+    #
+    # else:
+    #     output_dataframe = run_pipeline(dataframe, parameters)
+
     for combination in combinations:
         ### PREPROCESSING ###
 
@@ -75,4 +97,6 @@ def main():
 
 
 if __name__ == "__main__":
+    start_time = time.time()
     main()
+    print("--- %s seconds ---" % (time.time() - start_time))
