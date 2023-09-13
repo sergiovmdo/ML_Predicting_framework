@@ -1,3 +1,5 @@
+from sklearn.feature_selection import SelectKBest, mutual_info_classif
+
 class FeatureSelector:
     """
     After performing all the operations over variables and creating new ones, this module will sellect those variables
@@ -25,6 +27,8 @@ class FeatureSelector:
         """
         if self.technique == 'correlation':
             return self.correlation()
+        elif self.technique == 'mutual_information':
+            return self.mutual_information()
 
         else:
             return self.dataframe
@@ -43,3 +47,15 @@ class FeatureSelector:
         selected_features = selected_features + [self.target]
 
         return self.dataframe[selected_features]
+
+    def mutual_information(self):
+        """
+        Select the top 'n' features using Mutual Information.
+
+        Returns:
+            dataframe (dataframe): The feature matrix with selected features.
+        """
+        # Initialize the SelectKBest selector with mutual information scoring
+        selector = SelectKBest(score_func=mutual_info_classif, k=self.num_features)
+
+        return selector.fit_transform(self.dataframe, self.target)
