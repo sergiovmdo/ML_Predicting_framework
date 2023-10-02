@@ -9,7 +9,7 @@ class RandomForest(Model):
         'criterion': ['gini'],  # Splitting criterion (impurity measure)
         'max_depth': [5, 10],  # Maximum depth of individual trees
         'min_samples_split': [2, 5],  # Minimum number of samples required to split a node
-        'min_samples_leaf': [1, 2],  # Minimum number of samples required to be at a leaf node
+        'min_samples_leaf': [0.000001, 0.99999],  # Minimum number of samples required to be at a leaf node
         'max_features': [10],  # Number of features to consider when splitting
         'bootstrap': [True],  # Whether to bootstrap samples when building trees
         'oob_score': [True],  # Whether to use out-of-bag samples to estimate generalization error
