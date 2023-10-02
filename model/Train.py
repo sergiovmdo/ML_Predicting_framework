@@ -1,4 +1,5 @@
 from model.models.LogisticRegression import LogisticRegression
+from model.models.RandomForest import RandomForest
 
 
 class Train:
@@ -36,6 +37,18 @@ class Train:
             best_params = model.best_params_
 
             coefficients = model.best_estimator_.coef_[0]
+            feature_importances = {}
+            feature_names = self.X_train.columns.tolist()
+
+            for i, feature in enumerate(feature_names):
+                feature_importances[feature] = coefficients[i]
+
+        elif self.parameters['model'] == 'random_forest':
+            model = RandomForest(self.X_train, self.y_train, self.parameters['seed'])
+            model = model.train()
+            best_params = model.best_params_
+
+            coefficients = model.best_estimator_.feature_importances_
             feature_importances = {}
             feature_names = self.X_train.columns.tolist()
 

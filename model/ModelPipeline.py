@@ -1,8 +1,7 @@
-import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from model.Train import Train
-from model.models.EvaluateModel import EvaluateModel
+from model.EvaluateModel import EvaluateModel
 from model.OutputModule import Output
 
 class ModelPipeline:

@@ -1,6 +1,6 @@
 import sys
 import pandas as pd
-import ast
+import time
 import json
 import itertools
 import copy
@@ -75,4 +75,6 @@ def main():
 
 
 if __name__ == "__main__":
+    start_time = time.time()
     main()
+    print("--- %s seconds ---" % (time.time() - start_time))

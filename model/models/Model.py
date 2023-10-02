@@ -32,10 +32,11 @@ class Model:
             The trained grid search that contains the feature importances, best score, best hyperparameters,
             among other important parameters.
         """
-        grid_search = GridSearchCV(self.model, self.param_grid, cv=15, scoring='roc_auc')
+        grid_search = GridSearchCV(self.model, self.param_grid, cv=15, scoring='roc_auc', n_jobs=-1, verbose=1)
         grid_search.fit(self.X, self.y)
 
-        if round(grid_search.best_score_, 2) > round(self.best_score, 2):
+        if round(grid_search.best_score_, 1) > round(self.best_score, 1):
+            print('Optimizing')
             self.grid_search = grid_search
 
             self.best_score = grid_search.best_score_
@@ -117,6 +118,8 @@ class Model:
                 parameter_values = self.param_grid[parameter]
                 position = parameter_values.index(value)
 
+                var_type = type(value)
+
                 # First we contemplate the case where the optimal value is the last in the initial range
                 if position == len(parameter_values) - 1:
                     new_top = self.generate_next_number(value)
@@ -132,5 +135,8 @@ class Model:
 
                 new_range_bottom = self.generate_interval(new_bottom, value, 2)
                 new_range_top = self.generate_interval(new_top, value, 2)
+
+                new_range_bottom = [var_type(x) for x in new_range_bottom]
+                new_range_top = [var_type(x) for x in new_range_top]
 
                 self.param_grid[parameter] = new_range_bottom + new_range_top
