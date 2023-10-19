@@ -10,7 +10,7 @@ class LogisticRegression(Model):
     """
 
     param_grid = {
-        'C': [0.01, 0.1, 1, 10],  # Regularization parameter
+        'C': [0.1, 0.75, 1, 10],  # Regularization parameter
         'penalty': ['l1'],  # Regularization type
         'solver': ['liblinear'],  # Solver algorithms
         'max_iter': [3000]  # Maximum number of iterations for the solver to converge

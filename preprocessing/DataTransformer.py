@@ -5,8 +5,7 @@ from preprocessing.Scaler import Scaler
 class DataTransformer:
     """
     Transforming the data is the second step of the pipeline, this class will deal with all the processes related to it
-    including scaling and encoding. Each of this processes has its respective subclass that will inheritate from
-    this one.
+    including scaling and encoding.
     """
 
     def __init__(self, numerical_dataframe, categorical_dataframe, parameters):
@@ -25,7 +24,7 @@ class DataTransformer:
         self.parameters = parameters
 
         self.scaler = Scaler()
-        self.encoder = Encoder()
+        self.encoder = Encoder(categorical_dataframe, parameters)
 
     def transform_data(self):
         """
@@ -35,11 +34,11 @@ class DataTransformer:
             Both the numerical and categorical dataframes but already transformed.
         """
 
-        if 'scaler' in self.parameters:
+        if 'scaler' in self.parameters and self.parameters['scaler']:
             self.numerical_dataframe = self.scale(self.parameters['scaler'])
 
-        if 'encoder' in self.parameters:
-            self.categorical_dataframe = self.encode(self.parameters['encoder'])
+        if 'encoder' in self.parameters and self.parameters['encoder']:
+            self.categorical_dataframe = self.encode()
 
         return self.numerical_dataframe, self.categorical_dataframe
 
@@ -52,11 +51,11 @@ class DataTransformer:
         """
         return self.scaler.scale(self.numerical_dataframe, scaling_technique)
 
-    def encode(self, encoding_technique):
+    def encode(self):
         """
         Auxiliary method used for invoking the encoder.
 
         Returns:
             The encoded dataframe.
         """
-        return self.encoder.encode(self.categorical_dataframe, encoding_technique, self.parameters['target'])
+        return self.encoder.encode()

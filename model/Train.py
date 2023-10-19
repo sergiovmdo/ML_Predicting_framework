@@ -1,5 +1,6 @@
 from model.models.LogisticRegression import LogisticRegression
 from model.models.RandomForest import RandomForest
+from model.models.XGBoost import XGBoost
 
 
 class Train:
@@ -19,6 +20,25 @@ class Train:
         self.X_train = X_train
         self.y_train = y_train
         self.parameters = parameters
+
+    def get_feature_importances(self, model):
+        """
+        Retrieves the feature importances from a trained model.
+
+        Args:
+            model (object): trained model.
+
+        Returns:
+            A dictionary containing the feature importances.
+        """
+        coefficients = model.best_estimator_.feature_importances_
+        feature_importances = {}
+        feature_names = self.X_train.columns.tolist()
+
+        for i, feature in enumerate(feature_names):
+            feature_importances[feature] = coefficients[i]
+
+        return feature_importances
 
     def train(self):
         """
@@ -48,11 +68,14 @@ class Train:
             model = model.train()
             best_params = model.best_params_
 
-            coefficients = model.best_estimator_.feature_importances_
-            feature_importances = {}
-            feature_names = self.X_train.columns.tolist()
+            feature_importances = self.get_feature_importances(model)
 
-            for i, feature in enumerate(feature_names):
-                feature_importances[feature] = coefficients[i]
+
+        elif self.parameters['model'] == 'xgboost':
+            model = XGBoost(self.X_train, self.y_train, self.parameters['seed'])
+            model = model.train()
+            best_params = model.best_params_
+
+            feature_importances = self.get_feature_importances(model)
 
         return model, feature_importances, best_params

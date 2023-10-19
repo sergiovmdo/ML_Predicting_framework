@@ -5,12 +5,12 @@ from sklearn.ensemble import RandomForestClassifier
 class RandomForest(Model):
 
     param_grid = {
-        'n_estimators': [50],  # Number of trees in the forest
+        'n_estimators': [ 60, 75, 100],  # Number of trees in the forest
         'criterion': ['gini'],  # Splitting criterion (impurity measure)
-        'max_depth': [5, 10],  # Maximum depth of individual trees
-        'min_samples_split': [2, 5],  # Minimum number of samples required to split a node
-        'min_samples_leaf': [0.000001, 0.99999],  # Minimum number of samples required to be at a leaf node
-        'max_features': [10],  # Number of features to consider when splitting
+        'max_depth': [15, 20, 25],  # Maximum depth of individual trees
+        'min_samples_split': [2, 3],  # Minimum number of samples required to split a node
+        'min_samples_leaf': [1, 2, 5, 10],  # Minimum number of samples required to be at a leaf node
+        'max_features': [3,5,7],  # Number of features to consider when splitting
         'bootstrap': [True],  # Whether to bootstrap samples when building trees
         'oob_score': [True],  # Whether to use out-of-bag samples to estimate generalization error
     }

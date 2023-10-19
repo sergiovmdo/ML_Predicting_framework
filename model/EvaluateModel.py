@@ -3,7 +3,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 class EvaluateModel:
     """
-    Object that represents the evaluation module that performs all the operation relating the evaluation of the
+    Object that represents the evaluation module that performs all the operations relating the evaluation of the
     model.
     """
     def __init__(self, model, X_test, y_test):

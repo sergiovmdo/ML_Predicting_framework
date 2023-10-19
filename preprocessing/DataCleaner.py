@@ -15,7 +15,7 @@ class DataCleaner:
 
         Args:
             dataframe (dataframe): Data.
-            parameters (dictionary): parameters dictionary that contain all the information related to the process.
+            parameters (dictionary): parameters dictionary that contains all the information related to the process.
         """
         # We attempt to convert columns to its proper type
         self.dataframe = dataframe.infer_objects()
@@ -33,7 +33,7 @@ class DataCleaner:
         Returns:
             The cleaned dataframe.
         """
-        if 'imputer' in self.parameters:
+        if 'imputer' in self.parameters and self.parameters['imputer']:
             self.dataframe = self.impute(self.parameters['imputer'])
 
         return self.dataframe

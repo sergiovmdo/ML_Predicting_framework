@@ -42,8 +42,9 @@ class Model:
             self.best_score = grid_search.best_score_
             self.best_parameters = grid_search.best_params_
 
-            self.modify_grid_params()
-            return self.train()
+            #self.modify_grid_params()
+            #return self.train()
+            return self.grid_search
 
         else:
             return self.grid_search
@@ -92,11 +93,11 @@ class Model:
 
     def generate_next_number(self, x):
         """
-        Used to generate the next number for the hyperparameter fine tune when the optimal value is the highest
+        Used to generate the next number for the hyperparameter fine tuning when the optimal value is the highest
         one in the list.
 
         Args:
-            x (numerical): Optimal value from the hyperparameter fine tune from where we will extract the next
+            x (numerical): Optimal value from the hyperparameter fine tuning from where we will extract the next
             number.
 
         Returns:
@@ -110,7 +111,7 @@ class Model:
     def modify_grid_params(self):
         """
         Method that modifies all numerical list of hyperparameters dynamically. It iterates through all the
-        hyperparameter and taking into account the position of the optimal value it generates a new range
+        hyperparameters and taking into account the position of the optimal value it generates a new range
         of values that will be used in order to optimize even more the hyperparameters.
         """
         for parameter, value in self.best_parameters.items():

@@ -38,10 +38,8 @@ class ClassBalancer:
             return self.dataframe
 
     def transform(self, balancer):
-        X_resampled, y_resampled = balancer.fit_resample(self.dataframe.drop(self.target, axis=1),
-                                                         self.dataframe[self.target])
+        X_resampled, y_resampled = balancer.fit_resample(self.dataframe, self.target)
 
         dataframe_resampled = X_resampled.copy()
-        dataframe_resampled[self.target] = y_resampled
 
-        return dataframe_resampled
+        return dataframe_resampled, y_resampled

@@ -1,8 +1,9 @@
+import pandas as pd
 from sklearn.feature_selection import SelectKBest, mutual_info_classif
 
 class FeatureSelector:
     """
-    After performing all the operations over variables and creating new ones, this module will sellect those variables
+    After performing all the operations over variables and creating new ones, this module will select those variables
     that will be more useful to our predictive model.
     """
 
@@ -55,7 +56,23 @@ class FeatureSelector:
         Returns:
             dataframe (dataframe): The feature matrix with selected features.
         """
-        # Initialize the SelectKBest selector with mutual information scoring
-        selector = SelectKBest(score_func=mutual_info_classif, k=self.num_features)
+        if self.num_features > self.dataframe.shape[1]:
+            k = self.dataframe.shape[1] - 1
+        else:
+            k = self.num_features
 
-        return selector.fit_transform(self.dataframe, self.target)
+        # Initialize the SelectKBest selector with mutual information scoring
+        selector = SelectKBest(score_func=mutual_info_classif, k=k)
+        transformed_data = selector.fit_transform(self.dataframe.drop(self.target, axis=1), self.dataframe[self.target])
+
+        mask = selector.get_support()  # list of booleans
+        new_features = []  # The list of your K best features
+
+        for bool_val, feature in zip(mask, self.dataframe.columns):
+            if bool_val:
+                new_features.append(feature)
+
+        transformed_data = pd.DataFrame(transformed_data, columns=new_features)
+        transformed_data[self.target] = self.dataframe[self.target].values
+
+        return transformed_data

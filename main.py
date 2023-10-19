@@ -16,7 +16,7 @@ def generate_combinations(json_obj, current_combination, combinations_list):
 
     key, value = json_obj.popitem()
 
-    if isinstance(value, list):
+    if ("features" not in key) and isinstance(value, list):
         for item in value:
             new_combination = copy.deepcopy(current_combination)
             new_combination[key] = item
@@ -63,11 +63,11 @@ def main():
         ### PREPROCESSING ###
 
         preprocessing_pipeline = PreprocessingPipeline(dataframe, combination)
-        dataframe = preprocessing_pipeline.run()
+        X_train, X_test, y_train, y_test = preprocessing_pipeline.run()
 
         ### MODEL TRAINING AND TESTING ###
 
-        model_pipeline = ModelPipeline(dataframe, combination)
+        model_pipeline = ModelPipeline(X_train, X_test, y_train, y_test, combination)
         aux = model_pipeline.run()
         output_dataframe = pd.concat([output_dataframe, aux], ignore_index=True)
 

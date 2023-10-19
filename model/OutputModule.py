@@ -25,7 +25,12 @@ class Output:
         values = []
 
         for key, value in self.parameters.items():
-            columns.append(key)
-            values.append(value)
+            if isinstance(value, dict):
+                for sub_key, sub_value in value.items():
+                    columns.append(sub_key)
+                    values.append(sub_value)
+            else:
+                columns.append(key)
+                values.append(value)
 
         return pd.DataFrame([values], columns=columns)

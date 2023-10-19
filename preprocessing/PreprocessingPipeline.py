@@ -3,6 +3,7 @@ from preprocessing.DataCleaner import DataCleaner
 from preprocessing.ClassBalancer import ClassBalancer
 from preprocessing.DataTransformer import DataTransformer
 from preprocessing.FeatureSelector import FeatureSelector
+from sklearn.model_selection import train_test_split
 
 
 class PreprocessingPipeline:
@@ -12,7 +13,7 @@ class PreprocessingPipeline:
 
     def __init__(self, dataframe, parameters):
         """
-        Initialize a new instance of
+        Initialize a new instance of the Preprocessing pipepiline.
 
         Args:
             dataframe (dataframe): Data.
@@ -23,12 +24,13 @@ class PreprocessingPipeline:
         self.dataframe = dataframe
         self.parameters = parameters
 
-        # We want to have two separate dataframes according to its data type so we can perform different operations on them
-        self.split_by_data_type()
+        # We want to have two separate dataframes according to its data type so we can perform different operations
+        # on them
+
 
     def split_by_data_type(self):
         """
-        Splits the data in categorical and numerical and assigns it to the
+        Splits the data in categorical and numerical and assigns it to its respective class parameters
         """
         categorical_variables = self.dataframe.select_dtypes(include=['object', 'category']).columns.to_list()
         numerical_variables = list(filter(lambda x: x not in categorical_variables, self.dataframe.columns))
@@ -43,6 +45,19 @@ class PreprocessingPipeline:
         Returns:
             The preprocessed dataframe.
         """
+        # Keep wanted features only
+        if 'features' in self.parameters and len(self.parameters['features']) >= 1:
+            variables = self.parameters['features'] + [self.parameters['target']]
+
+            try:
+                self.dataframe = self.dataframe[variables]
+            except Exception as e:
+                raise Exception("Some variables are not in the dataframe: " + str(e))
+
+
+        # Split in numerical and categorical
+        self.split_by_data_type()
+
         # Data cleaning
         data_cleaner = DataCleaner(self.numerical_data, self.parameters)
         self.numerical_data = data_cleaner.clean_data()
@@ -67,15 +82,19 @@ class PreprocessingPipeline:
 
         # Feature selection
 
-        if 'feature_selector' in self.parameters:
+        if 'feature_selector' in self.parameters and self.parameters['feature_selector']:
             feature_selector = FeatureSelector(self.dataframe, self.parameters['target'],
                                                self.parameters['feature_selector'],
                                                self.parameters['num_features'])
             self.dataframe = feature_selector.select_features()
 
-        if 'class_balancer' in self.parameters:
-            class_balancer = ClassBalancer(self.dataframe, self.parameters['target'],
-                                           self.parameters['class_balancer'], self.parameters['seed'])
-            self.dataframe = class_balancer.balance_classes()
+        X_train, X_test, y_train, y_test = train_test_split(self.dataframe.drop(self.parameters['target'], axis=1),
+                                                            self.dataframe[self.parameters['target']], test_size=0.4,
+                                                            random_state=self.parameters['seed'])
 
-        return self.dataframe
+        if 'class_balancer' in self.parameters and self.parameters['class_balancer']:
+            class_balancer = ClassBalancer(X_train, y_train,
+                                           self.parameters['class_balancer'], self.parameters['seed'])
+            X_train, y_train = class_balancer.balance_classes()
+
+        return X_train, X_test, y_train, y_test
