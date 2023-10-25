@@ -6,6 +6,7 @@ class Model:
     Superclass of all the ML models, represents the concept of Model which is meant to store all the methods
     commonly used for training the models.
     """
+
     def __init__(self, X, y, model, param_grid):
         """
         Initialize a new instance of Model.
@@ -23,7 +24,7 @@ class Model:
         self.param_grid = param_grid
         self.best_score = 0.0
 
-    def train(self):
+    def train(self, enable_grid_modification=False):
         """
         Method that recursively trains the model modifying the hyperparameters dynamically until the current
         score do not improve the old one.
@@ -35,19 +36,17 @@ class Model:
         grid_search = GridSearchCV(self.model, self.param_grid, cv=15, scoring='roc_auc', n_jobs=-1, verbose=1)
         grid_search.fit(self.X, self.y)
 
-        if round(grid_search.best_score_, 1) > round(self.best_score, 1):
-            print('Optimizing')
+        if not enable_grid_modification or (round(grid_search.best_score_, 1) < round(self.best_score, 1)):
+            return self.grid_search
+
+        else:
             self.grid_search = grid_search
 
             self.best_score = grid_search.best_score_
             self.best_parameters = grid_search.best_params_
 
-            #self.modify_grid_params()
-            #return self.train()
-            return self.grid_search
-
-        else:
-            return self.grid_search
+            self.modify_grid_params()
+            return self.train()
 
     def generate_interval(self, x, y, n):
         """

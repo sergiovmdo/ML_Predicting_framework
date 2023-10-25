@@ -33,12 +33,12 @@ class ModelPipeline:
         """
         # We instantiate the training pipeline and we train the model
         training_pipeline = Train(self.X_train, self.y_train, self.parameters)
-        model, feature_importances, best_params = training_pipeline.train()
+        model, feature_importance, best_params = training_pipeline.train()
 
         self.parameters['best_params'] = best_params
 
-        sorted_feature_importances = OrderedDict(sorted(feature_importances.items(), key=lambda x: x[1], reverse=True))
-        self.parameters['feature_imporatances'] = sorted_feature_importances
+        sorted_feature_importance = OrderedDict(sorted(feature_importance.items(), key=lambda x: x[1], reverse=True))
+        self.parameters['feature_imporatances'] = sorted_feature_importance
 
         # We collect all the evaluation metrics from the trained model
         evaluation_pipeline = EvaluateModel(model, self.X_test, self.y_test)

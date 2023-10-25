@@ -53,7 +53,7 @@ class Train:
         """
         if self.parameters['model'] == 'logistic_regression':
             model = LogisticRegression(self.X_train, self.y_train, self.parameters['seed'])
-            model = model.train()
+            model = model.train(self.parameters['enable_parameter_search'])
             best_params = model.best_params_
 
             coefficients = model.best_estimator_.coef_[0]
