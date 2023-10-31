@@ -24,7 +24,7 @@ class Model:
         self.param_grid = param_grid
         self.best_score = 0.0
 
-    def train(self, enable_grid_modification=False):
+    def train(self, enable_grid_modification):
         """
         Method that recursively trains the model modifying the hyperparameters dynamically until the current
         score do not improve the old one.
@@ -33,12 +33,14 @@ class Model:
             The trained grid search that contains the feature importances, best score, best hyperparameters,
             among other important parameters.
         """
-        grid_search = GridSearchCV(self.model, self.param_grid, cv=15, scoring='roc_auc', n_jobs=-1, verbose=1)
+        grid_search = GridSearchCV(self.model, self.param_grid, cv=10, scoring='roc_auc', n_jobs=-1, verbose=1)
         grid_search.fit(self.X, self.y)
 
-        if not enable_grid_modification or (round(grid_search.best_score_, 1) < round(self.best_score, 1)):
+        if not enable_grid_modification:
+            return grid_search
+        # New grid search is not improving the score
+        elif round(grid_search.best_score_, 1) < round(self.best_score, 1):
             return self.grid_search
-
         else:
             self.grid_search = grid_search
 

@@ -4,6 +4,7 @@ from preprocessing.ClassBalancer import ClassBalancer
 from preprocessing.DataTransformer import DataTransformer
 from preprocessing.FeatureSelector import FeatureSelector
 from sklearn.model_selection import train_test_split
+import random
 
 
 class PreprocessingPipeline:
@@ -88,8 +89,11 @@ class PreprocessingPipeline:
                                                self.parameters['num_features'])
             self.dataframe = feature_selector.select_features()
 
+        if 'seed' not in self.parameters:
+            self.parameters['seed'] = random.randint(1, 9999)
+
         X_train, X_test, y_train, y_test = train_test_split(self.dataframe.drop(self.parameters['target'], axis=1),
-                                                            self.dataframe[self.parameters['target']], test_size=0.4,
+                                                            self.dataframe[self.parameters['target']], test_size=0.3,
                                                             random_state=self.parameters['seed'])
 
         if 'class_balancer' in self.parameters and self.parameters['class_balancer']:

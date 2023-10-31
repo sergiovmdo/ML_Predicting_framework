@@ -71,7 +71,7 @@ def main():
         aux = model_pipeline.run()
         output_dataframe = pd.concat([output_dataframe, aux], ignore_index=True)
 
-    output_dataframe.to_csv(parameters['output_file'])
+    output_dataframe.T.to_csv(parameters['output_file'])
 
 
 if __name__ == "__main__":

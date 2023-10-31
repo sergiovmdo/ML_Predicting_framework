@@ -29,11 +29,11 @@ class LogisticRegression(Model):
         """
         Model.__init__(self, X, y, LogisticRegressionModel(random_state=seed), self.param_grid)
 
-    def train(self):
+    def train(self, enable_parameter_search=False):
         """
         Used for training the model, it just calls to the method in the superclass.
         """
-        return super().train()
+        return super().train(enable_parameter_search)
 
 
 
