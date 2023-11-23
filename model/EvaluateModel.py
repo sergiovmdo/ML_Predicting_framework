@@ -5,6 +5,9 @@ from sklearn.ensemble import RandomForestClassifier
 import xgboost as xgb
 import random
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import roc_curve, auc
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 class EvaluateModel:
@@ -12,6 +15,7 @@ class EvaluateModel:
     Object that represents the evaluation module that performs all the operations relating the evaluation of the
     model.
     """
+
     def __init__(self, model, parameters):
         """
         Initialize a new instance of
@@ -33,6 +37,33 @@ class EvaluateModel:
         model.fit(X_train, y_train)
 
         return model
+
+    def plot_roc(self, metrics_df, average_values):
+        plt.figure(figsize=(8, 8))
+        for index, row in metrics_df.iterrows():
+            tpr = row['tpr']
+            fpr = row['fpr']
+            #roc_auc = row['roc_auc']
+
+            plt.plot(fpr, tpr, lw=1)
+
+        # Convert lists of arrays to NumPy arrays
+        metrics_df['fpr'] = metrics_df['fpr'].apply(np.array)
+        metrics_df['tpr'] = metrics_df['tpr'].apply(np.array)
+
+        # Compute mean FPR and mean TPR
+        mean_fpr = np.mean(metrics_df['fpr'].tolist(), axis=0)
+        mean_tpr = np.mean(metrics_df['tpr'].tolist(), axis=0)
+
+        plt.plot(mean_fpr, mean_tpr, color='navy', lw=2, linestyle='--',
+                 label='Mean ROC curve')
+
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('Receiver Operating Characteristic (ROC) Curve')
+        plt.legend(loc='lower right')
+
+        plt.savefig('roc.pdf')
 
     def compute_metrics(self, y_true, y_pred, y_pred_proba):
         """
@@ -69,12 +100,18 @@ class EvaluateModel:
         # conf_matrix = confusion_matrix(y_true, y_pred)
         # evaluation_results['confusion_matrix'] = conf_matrix
 
-        auc = roc_auc_score(y_true, y_pred_proba)  # y_pred should be probability scores for positive class
-        evaluation_results['auc'] = auc
+        auc_score = roc_auc_score(y_true, y_pred_proba)  # y_pred should be probability scores for positive class
+        evaluation_results['auc'] = auc_score
+
+        # Compute ROC curve and ROC area for each class
+        fpr, tpr, _ = roc_curve(y_true, y_pred_proba)
+        evaluation_results['fpr'] = fpr
+        evaluation_results['tpr'] = tpr
+
+        roc_auc = auc(fpr, tpr)
+        evaluation_results['roc_auc'] = roc_auc
 
         return evaluation_results
-
-
 
     def evaluate_by_splitting(self, X, y, runs):
         y_pred = self.model.predict(X)
@@ -86,10 +123,11 @@ class EvaluateModel:
 
         seeds = [random.randint(1, 99999) for _ in range(runs)]
         for seed in seeds:
-            X_train, X_test, y_train, y_test = train_test_split(self.parameters['dataframe'].drop(self.parameters['target'], axis=1),
-                                                                self.parameters['dataframe'][self.parameters['target']],
-                                                                test_size=0.3,
-                                                                random_state=seed)
+            X_train, X_test, y_train, y_test = train_test_split(
+                self.parameters['dataframe'].drop(self.parameters['target'], axis=1),
+                self.parameters['dataframe'][self.parameters['target']],
+                test_size=0.3,
+                random_state=seed)
 
             model = self.instantiate_model(X_train, y_train, self.parameters['model'], self.parameters['best_params'])
             y_pred = model.predict(X_test)
@@ -102,14 +140,17 @@ class EvaluateModel:
             # Append the new row to the original DataFrame
             metrics_df = pd.concat([metrics_df, new_row], axis=0)
 
+        roc_curves_df = metrics_df[['fpr', 'tpr']]
+
         # Calculate the average of each column
-        average_values = metrics_df.mean()
+        average_values = metrics_df.drop(['fpr', 'tpr'], axis=1).mean()
+
+        self.plot_roc(roc_curves_df, average_values)
 
         # Convert the Series with average values to a dictionary
         average_dict = average_values.to_dict()
 
         return average_dict
-
 
     def evaluate_by_overoptimism(self, runs):
         # Original data
@@ -135,7 +176,8 @@ class EvaluateModel:
             boostrapped_y = bootstrap_sample[self.parameters['target']]
 
             # Fit the model on the bootstrap sample
-            model = self.instantiate_model(boostrapped_X, boostrapped_y, self.parameters['model'], self.parameters['best_params'])
+            model = self.instantiate_model(boostrapped_X, boostrapped_y, self.parameters['model'],
+                                           self.parameters['best_params'])
 
             # Use the fitted model over the original data
             y_pred = model.predict(X)
@@ -162,6 +204,7 @@ class EvaluateModel:
 
         # We return the metrics and the overfitting measures
         return unbiased_metrics, average_dict
+
     def evaluate(self):
         """
         We use the trained model for predicting the part of the dataset that we kept for testing
