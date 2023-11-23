@@ -24,6 +24,12 @@ class Output:
         columns = []
         values = []
 
+        del self.parameters['X_train']
+        del self.parameters['X_test']
+        del self.parameters['y_train']
+        del self.parameters['y_test']
+        del self.parameters['dataframe']
+
         for key, value in self.parameters.items():
             if isinstance(value, dict):
                 for sub_key, sub_value in value.items():

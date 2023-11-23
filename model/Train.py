@@ -8,7 +8,7 @@ class Train:
     Object that represents the training procedure that will store all the needed information for it.
     """
 
-    def __init__(self, X_train, y_train, parameters):
+    def __init__(self, parameters):
         """
         Initialize a new instance of Train
 
@@ -17,8 +17,6 @@ class Train:
             y_train (array): target array corresponding to training data.
             parameters (dictionary): contains all the needed parameters.
         """
-        self.X_train = X_train
-        self.y_train = y_train
         self.parameters = parameters
 
     def get_feature_importances(self, model):
@@ -33,7 +31,7 @@ class Train:
         """
         coefficients = model.best_estimator_.feature_importances_
         feature_importances = {}
-        feature_names = self.X_train.columns.tolist()
+        feature_names = self.parameters['X_train'].columns.tolist()
 
         for i, feature in enumerate(feature_names):
             feature_importances[feature] = coefficients[i]
@@ -52,19 +50,19 @@ class Train:
 
         """
         if self.parameters['model'] == 'logistic_regression':
-            model = LogisticRegression(self.X_train, self.y_train, self.parameters['seed'])
+            model = LogisticRegression(self.parameters['X_train'], self.parameters['y_train'], self.parameters['seed'])
             model = model.train(self.parameters['enable_parameter_search'])
             best_params = model.best_params_
 
             coefficients = model.best_estimator_.coef_[0]
             feature_importances = {}
-            feature_names = self.X_train.columns.tolist()
+            feature_names = self.parameters['X_train'].columns.tolist()
 
             for i, feature in enumerate(feature_names):
                 feature_importances[feature] = coefficients[i]
 
         elif self.parameters['model'] == 'random_forest':
-            model = RandomForest(self.X_train, self.y_train, self.parameters['seed'])
+            model = RandomForest(self.parameters['X_train'], self.parameters['y_train'], self.parameters['seed'])
             model = model.train()
             best_params = model.best_params_
 
@@ -72,7 +70,7 @@ class Train:
 
 
         elif self.parameters['model'] == 'xgboost':
-            model = XGBoost(self.X_train, self.y_train, self.parameters['seed'])
+            model = XGBoost(self.parameters['X_train'], self.parameters['y_train'], self.parameters['seed'])
             model = model.train()
             best_params = model.best_params_
 

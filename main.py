@@ -63,11 +63,11 @@ def main():
         ### PREPROCESSING ###
 
         preprocessing_pipeline = PreprocessingPipeline(dataframe, combination)
-        X_train, X_test, y_train, y_test = preprocessing_pipeline.run()
+        local_parameters = preprocessing_pipeline.run()
 
         ### MODEL TRAINING AND TESTING ###
 
-        model_pipeline = ModelPipeline(X_train, X_test, y_train, y_test, combination)
+        model_pipeline = ModelPipeline(local_parameters)
         aux = model_pipeline.run()
         output_dataframe = pd.concat([output_dataframe, aux], ignore_index=True)
 
