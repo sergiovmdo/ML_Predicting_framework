@@ -1,0 +1,15 @@
+{
+  "target": "RECIST",
+  "features": ["tmb_zscore"],
+  "scaler": "min_max",
+  "encoder": "one_hot",
+  "feature_selector": "mutual_information",
+  "num_features": 10,
+  "class_balancer": "",
+  "split_validation": true,
+  "model": "xgboost",
+  "enable_parameter_search": true,
+  "splitting_runs": 30,
+  "bootstrap_runs": 10,
+  "output_file": "test.csv"
+}
