@@ -33,8 +33,8 @@ def main():
         return
 
     # Access command-line arguments
-    arg1 = sys.argv[1]
-    arg2 = sys.argv[2]
+    arg1 = sys.argv[0]
+    arg2 = sys.argv[1]
 
     # We need to convert our arg2 into a dictionary of parameters
     try:

@@ -31,7 +31,7 @@ class Output:
         del self.parameters['dataframe']
 
         for key, value in self.parameters.items():
-            if isinstance(value, dict):
+            if isinstance(value, dict) and key is not 'feature_importances':
                 for sub_key, sub_value in value.items():
                     columns.append(sub_key)
                     values.append(sub_value)

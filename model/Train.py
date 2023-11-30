@@ -19,25 +19,6 @@ class Train:
         """
         self.parameters = parameters
 
-    def get_feature_importances(self, model):
-        """
-        Retrieves the feature importances from a trained model.
-
-        Args:
-            model (object): trained model.
-
-        Returns:
-            A dictionary containing the feature importances.
-        """
-        coefficients = model.best_estimator_.feature_importances_
-        feature_importances = {}
-        feature_names = self.parameters['X_train'].columns.tolist()
-
-        for i, feature in enumerate(feature_names):
-            feature_importances[feature] = coefficients[i]
-
-        return feature_importances
-
     def train(self):
         """
         Performs the training step which varies depending on the type of model that we will be using.
@@ -54,26 +35,14 @@ class Train:
             model = model.train(self.parameters['enable_parameter_search'])
             best_params = model.best_params_
 
-            coefficients = model.best_estimator_.coef_[0]
-            feature_importances = {}
-            feature_names = self.parameters['X_train'].columns.tolist()
-
-            for i, feature in enumerate(feature_names):
-                feature_importances[feature] = coefficients[i]
-
         elif self.parameters['model'] == 'random_forest':
             model = RandomForest(self.parameters['X_train'], self.parameters['y_train'], self.parameters['seed'])
             model = model.train()
-            best_params = model.best_params_
-
-            feature_importances = self.get_feature_importances(model)
-
+            best_params = model.best_params_s
 
         elif self.parameters['model'] == 'xgboost':
             model = XGBoost(self.parameters['X_train'], self.parameters['y_train'], self.parameters['seed'])
             model = model.train()
             best_params = model.best_params_
 
-            feature_importances = self.get_feature_importances(model)
-
-        return model, feature_importances, best_params
+        return model, best_params

@@ -114,4 +114,6 @@ class PreprocessingPipeline:
         self.parameters['y_train'] = y_train
         self.parameters['y_test'] = y_test
 
+        self.parameters['sample_size'] = self.dataframe.shape[0]
+
         return self.parameters
