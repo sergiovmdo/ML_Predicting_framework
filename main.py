@@ -32,9 +32,13 @@ def main():
         print("Usage: python script.py argument1 argument2")
         return
 
-    # Access command-line arguments
-    arg1 = sys.argv[1]
-    arg2 = sys.argv[2]
+    if len(sys.argv) < 3:
+        # Access command-line arguments
+        arg1 = sys.argv[0]
+        arg2 = sys.argv[1]
+    else:
+        arg1 = sys.argv[1]
+        arg2 = sys.argv[2]
 
     # We need to convert our arg2 into a dictionary of parameters
     try:
@@ -63,11 +67,11 @@ def main():
         ### PREPROCESSING ###
 
         preprocessing_pipeline = PreprocessingPipeline(dataframe, combination)
-        X_train, X_test, y_train, y_test = preprocessing_pipeline.run()
+        local_parameters = preprocessing_pipeline.run()
 
         ### MODEL TRAINING AND TESTING ###
 
-        model_pipeline = ModelPipeline(X_train, X_test, y_train, y_test, combination)
+        model_pipeline = ModelPipeline(local_parameters)
         aux = model_pipeline.run()
         output_dataframe = pd.concat([output_dataframe, aux], ignore_index=True)
 
