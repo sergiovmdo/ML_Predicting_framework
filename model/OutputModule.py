@@ -30,6 +30,22 @@ class Output:
         del self.parameters['y_test']
         del self.parameters['dataframe']
 
+        if self.parameters['evaluation_technique'] != 'bootstrap':
+            for key, value in self.parameters['evaluation_results'].items():
+                self.parameters['evaluation_results'][key] = round(value, 4)
+        else:
+            metrics = self.parameters['evaluation_results'][0]
+            c_stat = self.parameters['evaluation_results'][1]
+            for key, value in metrics.items():
+                metrics[key] = round(value, 4)
+
+            self.parameters['evaluation_results'] = metrics
+
+            for key, value in c_stat.items():
+                c_stat[key] = round(value, 4)
+
+            self.parameters['overfitting'] = c_stat
+
         for key, value in self.parameters.items():
             if isinstance(value, dict) and key is not 'feature_importances':
                 for sub_key, sub_value in value.items():

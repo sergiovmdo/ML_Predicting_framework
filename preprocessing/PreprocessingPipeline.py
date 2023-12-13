@@ -92,7 +92,7 @@ class PreprocessingPipeline:
         if 'seed' not in self.parameters or not self.parameters['seed']:
             self.parameters['seed'] = random.randint(1, 9999)
 
-        if self.parameters['split_validation']:
+        if self.parameters['evaluation_technique'] == 'train_test':
             X_train, X_test, y_train, y_test = train_test_split(self.dataframe.drop(self.parameters['target'], axis=1),
                                                                 self.dataframe[self.parameters['target']], test_size=0.3,
                                                                 random_state=self.parameters['seed'])

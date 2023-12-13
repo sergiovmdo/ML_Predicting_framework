@@ -1,9 +1,7 @@
-from sklearn.model_selection import train_test_split
-
 from model.Train import Train
-from model.EvaluateModel import EvaluateModel
+from model.evaluation.EvaluationPipeline import EvaluationPipeline
 from model.OutputModule import Output
-from collections import OrderedDict
+
 
 class ModelPipeline:
     """
@@ -33,7 +31,7 @@ class ModelPipeline:
         self.parameters['best_params'] = best_params
 
         # We collect all the evaluation metrics from the trained model
-        evaluation_pipeline = EvaluateModel(model, self.parameters)
+        evaluation_pipeline = EvaluationPipeline(model, self.parameters)
         evaluation_results = evaluation_pipeline.evaluate()
 
         self.parameters['evaluation_results'] = evaluation_results

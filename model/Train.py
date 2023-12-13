@@ -1,4 +1,5 @@
 from model.models.LogisticRegression import LogisticRegression
+from model.models.RBF_SVM import RBF_SVM
 from model.models.RandomForest import RandomForest
 from model.models.XGBoost import XGBoost
 
@@ -42,6 +43,11 @@ class Train:
 
         elif self.parameters['model'] == 'xgboost':
             model = XGBoost(self.parameters['X_train'], self.parameters['y_train'], self.parameters['seed'])
+            model = model.train()
+            best_params = model.best_params_
+
+        elif self.parameters['model'] == 'rbf_svm':
+            model = RBF_SVM(self.parameters['X_train'], self.parameters['y_train'], self.parameters['seed'])
             model = model.train()
             best_params = model.best_params_
 
