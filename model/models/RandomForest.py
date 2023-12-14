@@ -32,4 +32,4 @@ class RandomForest(Model):
         """
         Used for training the model, it just calls to the method in the superclass.
         """
-        return super().train(enable_parameter_search)
+        return  ().train(enable_parameter_search)

@@ -22,7 +22,7 @@ class ClassBalancer:
         self.technique = technique
         self.seed = seed
 
-    def balance_classes(self):
+    def  balance_classes(self):
         """
         Depending on the balancing technique calls the implementation of it.
 

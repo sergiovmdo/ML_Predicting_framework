@@ -23,7 +23,7 @@ class BootstrapPoint632(EvaluateModel):
 
         for k, v in callable_metrics.items():
             scores = bootstrap_point632_score(model, X, y, n_splits=self.runs, method='.632+', scoring_func=v,
-                                              predict_proba=(k == 'auc'))
+                                              predict_proba=(k == 'auc' or k == 'roc'))
             score = np.mean(scores)
             metrics[k] = score
 

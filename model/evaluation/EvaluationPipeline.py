@@ -5,15 +5,16 @@ from model.evaluation.TrainTest import TrainTest
 
 class EvaluationPipeline:
     """
-    Object that represents the evaluation module that performs all the operations relating the evaluation of the
-    model.
+    Pipeline for the evaluation of the ML model.
     """
 
     def __init__(self, model, parameters):
         """
-        Initialize a new instance of
+        Initialize a new instance of the Pipeline
 
         Args:
+            model: machine learning model to be tested.
+            parameters (dictionary): dictionary containing all the needed parameters.
 
         """
         self.model = model
@@ -21,14 +22,10 @@ class EvaluationPipeline:
 
     def evaluate(self):
         """
-        We use the trained model for predicting the part of the dataset that we kept for testing
-        purposes.
-
-        Once we get the predictions we compared against the truth in order to extract all the common metrics
-        used in Machine Learning: Accuracy, precision, recall, f1-score, AUC, and the confussion matrix.
+        According to the evaluation strategy, invokes the corresponding class.
 
         Returns:
-            A dictionary containing all the results.
+            The dictionary containing all the different metrics.
         """
 
         if self.parameters['evaluation_technique'] == 'train_test':

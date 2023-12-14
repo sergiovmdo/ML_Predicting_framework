@@ -4,13 +4,24 @@ from model.evaluation.EvaluateModel import EvaluateModel
 
 
 class InternalValidation(EvaluateModel):
+    """
+    Class for performing internal validation over the totallity of the data.
+    """
     def __init__(self, parameters, model):
+        """
+        Instantiates the class
+        Args:
+            parameters (dictionary): dictionary containing all different elements needed for the run.
+            model: ML model.
+        """
         self.runs = parameters['bootstrap_runs']
         self.parameters = parameters
         self.model = model
 
-
     def evaluate(self):
+        """
+        Main method, used for evaluation the model.
+        """
         # Original data
         X = self.parameters['X_train']
         y = self.parameters['y_train']
@@ -88,5 +99,3 @@ class InternalValidation(EvaluateModel):
 
         # We return the metrics and the overfitting measures
         return corrected_metrics, average_dict
-
-

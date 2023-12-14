@@ -20,7 +20,6 @@ class DataCleaner:
         # We attempt to convert columns to its proper type
         self.dataframe = dataframe.infer_objects()
         self.parameters = parameters
-        self.remove_duplicates()
 
         self.imputer = Imputer()
 
