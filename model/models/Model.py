@@ -1,4 +1,5 @@
 from sklearn.model_selection import GridSearchCV
+import numpy as np
 
 
 class Model:
@@ -33,13 +34,16 @@ class Model:
             The trained grid search that contains the feature importances, best score, best hyperparameters,
             among other important parameters.
         """
-        grid_search = GridSearchCV(self.model, self.param_grid, cv=10, scoring='roc_auc', n_jobs=-1, verbose=1)
+        min_class_samples = np.min(np.bincount(self.y))
+        n_splits = min(10, min_class_samples)
+
+        grid_search = GridSearchCV(self.model, self.param_grid, cv=n_splits, scoring='roc_auc', n_jobs=-1, verbose=1)
         grid_search.fit(self.X, self.y)
 
         if not enable_grid_modification:
             return grid_search
         # New grid search is not improving the score
-        elif round(grid_search.best_score_, 1) < round(self.best_score, 1):
+        elif round(grid_search.best_score_, 2) < round(self.best_score, 2):
             return self.grid_search
         else:
             self.grid_search = grid_search

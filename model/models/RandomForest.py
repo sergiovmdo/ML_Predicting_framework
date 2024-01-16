@@ -5,12 +5,12 @@ from sklearn.ensemble import RandomForestClassifier
 class RandomForest(Model):
 
     param_grid = {
-        'n_estimators': [ 60, 75, 100],  # Number of trees in the forest
+        'n_estimators': [100],  # Number of trees in the forest
         'criterion': ['gini'],  # Splitting criterion (impurity measure)
-        'max_depth': [15, 20, 25],  # Maximum depth of individual trees
-        'min_samples_split': [2, 3],  # Minimum number of samples required to split a node
-        'min_samples_leaf': [1, 2, 5, 10],  # Minimum number of samples required to be at a leaf node
-        'max_features': [3,5,7],  # Number of features to consider when splitting
+        'max_depth': [None],  # Maximum depth of individual trees
+        'min_samples_split': [2],  # Minimum number of samples required to split a node
+        'min_samples_leaf': [2],  # Minimum number of samples required to be at a leaf node
+        'max_features': ["sqrt"],  # Number of features to consider when splitting
         'bootstrap': [True],  # Whether to bootstrap samples when building trees
         'oob_score': [True],  # Whether to use out-of-bag samples to estimate generalization error
     }
@@ -32,4 +32,4 @@ class RandomForest(Model):
         """
         Used for training the model, it just calls to the method in the superclass.
         """
-        return  ().train(enable_parameter_search)
+        return super().train(enable_parameter_search)

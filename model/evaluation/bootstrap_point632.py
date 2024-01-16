@@ -5,13 +5,14 @@
 # Author: Sebastian Raschka <sebastianraschka.com>
 #
 # License: BSD 3 clause
-
+from collections import OrderedDict
 from itertools import product
 
 import numpy as np
+import pandas as pd
 from mlxtend.evaluate import BootstrapOutOfBag
 from sklearn.base import clone
-
+from model.evaluation import EvaluateModel
 
 
 def _check_arrays(X, y=None):
@@ -47,6 +48,8 @@ def bootstrap_point632_score(
     estimator,
     X,
     y,
+    model_type,
+    feature_names,
     n_splits=200,
     method=".632",
     scoring_func=None,
@@ -204,9 +207,12 @@ def bootstrap_point632_score(
     scores = np.empty(dtype=float, shape=(n_splits,))
     cnt = 0
 
+    feature_importances_df = pd.DataFrame()
+
     for train, test in oob.split(X):
         cloned_est.fit(X[train], y[train], **fit_params)
-
+        feature_importances = EvaluateModel.get_feature_importances(cloned_est, model_type, feature_names)
+        feature_importances_df = pd.concat([feature_importances_df, pd.DataFrame([feature_importances])], axis=0)
         # get the prediction probability
         # for binary class uses the last column
         predicted_test_val = predict_func(X[test])
@@ -236,7 +242,10 @@ def bootstrap_point632_score(
                 predicted_train_val = predicted_train_val[:, 1]
                 predicted_test_val = predicted_test_val[:, 1]
 
-        test_acc = scoring_func(y[test], predicted_test_val)
+        try:
+            test_acc = scoring_func(y[test], predicted_test_val)
+        except:
+            continue
 
         if method == "oob":
             acc = test_acc
@@ -262,4 +271,14 @@ def bootstrap_point632_score(
 
         scores[cnt] = acc
         cnt += 1
-    return scores
+
+    average_feature_importances = feature_importances_df.mean()
+    average_feature_importances = average_feature_importances.to_dict()
+    rounded_feature_importances = {key: round(float(value), 3) for key, value in
+                                   average_feature_importances.items()}
+
+    # Sort the dictionary by values in descending order
+    sorted_feature_importances = OrderedDict(
+        sorted(rounded_feature_importances.items(), key=lambda x: x[1], reverse=True))
+
+    return scores, sorted_feature_importances

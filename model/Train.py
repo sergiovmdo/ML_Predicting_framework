@@ -1,3 +1,4 @@
+from model.models.GradientDescent import GradientDescent
 from model.models.LogisticRegression import LogisticRegression
 from model.models.RBF_SVM import RBF_SVM
 from model.models.RandomForest import RandomForest
@@ -39,7 +40,7 @@ class Train:
         elif self.parameters['model'] == 'random_forest':
             model = RandomForest(self.parameters['X_train'], self.parameters['y_train'], self.parameters['seed'])
             model = model.train()
-            best_params = model.best_params_s
+            best_params = model.best_params_
 
         elif self.parameters['model'] == 'xgboost':
             model = XGBoost(self.parameters['X_train'], self.parameters['y_train'], self.parameters['seed'])
@@ -48,6 +49,11 @@ class Train:
 
         elif self.parameters['model'] == 'rbf_svm':
             model = RBF_SVM(self.parameters['X_train'], self.parameters['y_train'], self.parameters['seed'])
+            model = model.train()
+            best_params = model.best_params_
+
+        elif self.parameters['model'] == 'gradient_descent':
+            model = GradientDescent(self.parameters['X_train'], self.parameters['y_train'], self.parameters['seed'])
             model = model.train()
             best_params = model.best_params_
 

@@ -2,35 +2,54 @@ from scipy.interpolate import interp1d
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, auc, roc_curve
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import SGDClassifier
 import xgboost as xgb
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.svm import SVC
 
 
-class EvaluateModel:
+def get_feature_importances(model, model_type, feature_names):
     """
-    Superclass for the different evaluation techniques implemented in the pipeline, contains all the common methods
+    Retrieves the feature importances from a trained model.
+
+    Args:
+        model (object): trained model.
+
+    Returns:
+        A dictionary containing the feature importances.
     """
-    def get_feature_importances(self, model):
-        """
-        Retrieves the feature importances from a trained model.
+    feature_importances = {}
 
-        Args:
-            model (object): trained model.
+    if model_type == 'logistic_regression':
+        coefficients = model.coef_[0]
 
-        Returns:
-            A dictionary containing the feature importances.
-        """
+        for i, feature in enumerate(feature_names):
+            feature_importances[feature] = coefficients[i]
+
+    elif model_type == 'rbf_svm':
+        feature_importances = {}
+    elif model_type == 'gradient_descent':
+        coefficients = model.coef_[0]
+
+        for i, feature in enumerate(feature_names):
+            feature_importances[feature] = coefficients[i]
+
+    else:
         coefficients = model.feature_importances_
         feature_importances = {}
-        feature_names = self.parameters['X_train'].columns.tolist()
 
         for i, feature in enumerate(feature_names):
             feature_importances[feature] = coefficients[i]
 
         return feature_importances
 
+    return feature_importances
+
+class EvaluateModel:
+    """
+    Superclass for the different evaluation techniques implemented in the pipeline, contains all the common methods
+    """
     def instantiate_model(self, X_train, y_train, model_type, params):
         """
         Fits the model to the data passed as parameters and retrieves the feature importances
@@ -52,20 +71,13 @@ class EvaluateModel:
             model = LogisticRegression(**params)
         elif model_type == 'rbf_svm':
             model = SVC(kernel='rbf', probability=True, **params)
+        elif model_type == 'gradient_descent':
+            model = SGDClassifier(**params)
 
         model.fit(X_train, y_train)
 
-        if model_type == 'logistic_regression':
-            coefficients = model.coef_[0]
-            feature_importances = {}
-            feature_names = self.parameters['X_train'].columns.tolist()
-
-            for i, feature in enumerate(feature_names):
-                feature_importances[feature] = coefficients[i]
-        elif model_type == 'rbf_svm':
-            feature_importances = {}
-        else:
-            feature_importances = self.get_feature_importances(model)
+        feature_names = self.parameters['X_train'].columns.tolist()
+        feature_importances = get_feature_importances(model, model_type, feature_names)
 
         return model, feature_importances
 

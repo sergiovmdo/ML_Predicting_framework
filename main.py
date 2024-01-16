@@ -10,13 +10,14 @@ from preprocessing.PreprocessingPipeline import PreprocessingPipeline
 
 def exception_control(parameters):
     valid_parameters = ['target', 'features', 'scaler', 'encoder', 'class_balancer', 'evaluation_technique',
-                        'model', 'enable_parameter_search', 'splitting_runs', 'bootstrap_runs', 'output_file']
+                        'model', 'enable_parameter_search', 'splitting_runs', 'bootstrap_runs', 'output_file',
+                        'num_features', 'feature_selector']
 
     valid_scalers = ['min_max', 'z_score']
     valid_encoders = ['one_hot', 'target_encoding']
     valid_balancers = ['smote', 'random_oversampling']
     valid_evaluation_techniques = ['train_test', 'bootstrap', '.632+']
-    valid_models = ['logistic_regression', 'random_forest', 'xgboost', 'rbf_svm']
+    valid_models = ['logistic_regression', 'random_forest', 'xgboost', 'rbf_svm', 'gradient_descent']
 
     for k, v in parameters.items():
         if k not in valid_parameters:

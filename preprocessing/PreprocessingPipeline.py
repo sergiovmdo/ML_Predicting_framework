@@ -83,7 +83,8 @@ class PreprocessingPipeline:
 
         # Feature selection
 
-        if 'feature_selector' in self.parameters and self.parameters['feature_selector']:
+        if 'feature_selector' in self.parameters and self.parameters['feature_selector'] \
+                and 'num_features' in self.parameters and self.parameters['num_features'] > 0:
             feature_selector = FeatureSelector(self.dataframe, self.parameters['target'],
                                                self.parameters['feature_selector'],
                                                self.parameters['num_features'])

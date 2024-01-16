@@ -3,9 +3,20 @@ import xgboost as xgb
 
 
 class XGBoost(Model):
+    # param_grid = {
+    #     'learning_rate': [0.01, 0.1, 0.2, 0.3],
+    #     'n_estimators': [50, 100, 200, 300],
+    #     'max_depth': [3, 4, 5, 6],
+    #     'min_child_weight': [1, 2, 3, 4],
+    #     'subsample': [0.8, 0.9, 1.0],
+    #     'colsample_bytree': [0.8, 0.9, 1.0],
+    #     'gamma': [0, 0.1, 0.2, 0.3],
+    #     'reg_alpha': [0, 0.1, 0.2, 0.3],
+    #     'reg_lambda': [0, 0.1, 0.2, 0.3]
+    # }
 
     param_grid = {
-        'n_estimators': [10, 50, 100],  # Number of boosting rounds (trees)
+        'n_estimators': [50, 100],  # Number of boosting rounds (trees)
         'learning_rate': [0.15],  # Step size shrinkage used in each boosting round
         'max_depth': [4],  # Maximum depth of individual trees
         'min_child_weight': [5],  # Minimum sum of instance weight (hessian) needed in a child
