@@ -8,7 +8,7 @@ class Model:
     commonly used for training the models.
     """
 
-    def __init__(self, X, y, model, param_grid):
+    def __init__(self, parameters, model):
         """
         Initialize a new instance of Model.
 
@@ -19,13 +19,15 @@ class Model:
             param_grid (dictionary): Hyperparameters for the model.
 
         """
-        self.X = X
-        self.y = y
+        self.parameters = parameters
+        self.X = self.parameters['X_train']
+        self.y = self.parameters['y_train']
         self.model = model
-        self.param_grid = param_grid
+        self.param_grid = self.parameters['parameters_grid']
         self.best_score = 0.0
+        self.enable_grid_modification = self.parameters['enable_parameter_search']
 
-    def train(self, enable_grid_modification):
+    def train(self):
         """
         Method that recursively trains the model modifying the hyperparameters dynamically until the current
         score do not improve the old one.
@@ -35,12 +37,12 @@ class Model:
             among other important parameters.
         """
         min_class_samples = np.min(np.bincount(self.y))
-        n_splits = min(10, min_class_samples)
+        n_splits = min(15, min_class_samples)
 
         grid_search = GridSearchCV(self.model, self.param_grid, cv=n_splits, scoring='roc_auc', n_jobs=-1, verbose=1)
         grid_search.fit(self.X, self.y)
 
-        if not enable_grid_modification:
+        if not self.enable_grid_modification:
             return grid_search
         # New grid search is not improving the score
         elif round(grid_search.best_score_, 2) < round(self.best_score, 2):

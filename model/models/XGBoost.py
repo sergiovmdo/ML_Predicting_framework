@@ -27,7 +27,7 @@ class XGBoost(Model):
         'lambda': [1e-3],  # L2 regularization term on weights
     }
 
-    def __init__(self, X, y, seed):
+    def __init__(self, parameters):
         """
         Initialize a new instance of XGBoost which is a subclass of the Model class which is also
         instantiated inside this constructor.
@@ -38,11 +38,14 @@ class XGBoost(Model):
             seed (int): Seed to be used in the LogisticRegression
 
         """
+        self.parameters = parameters
+        if 'parameters_grid' not in self.parameters:
+            self.parameters['parameters_grid'] = self.param_grid
 
-        Model.__init__(self, X, y, xgb.XGBClassifier(random_state=seed), self.param_grid)
+        Model.__init__(self, parameters, xgb.XGBClassifier(random_state=self.parameters['seed']))
 
-    def train(self, enable_parameter_search=False):
+    def train(self):
         """
         Used for training the model, it just calls to the method in the superclass.
         """
-        return super().train(enable_parameter_search)
+        return super().train()

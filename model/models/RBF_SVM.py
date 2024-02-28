@@ -9,7 +9,7 @@ class RBF_SVM(Model):
         'gamma': [0.1, 1],
     }
 
-    def __init__(self, X, y, seed):
+    def __init__(self, parameters):
         """
         Initialize a new instance of LogisticRegression which is a subclass of the Model class which is also
         instantiated inside this constructor.
@@ -18,12 +18,15 @@ class RBF_SVM(Model):
             X (dataframe): Dataframe containing the training information for the model.
             y (array): Array containing the training target variable.
             seed (int): Seed to be used in the LogisticRegression
-
         """
-        Model.__init__(self, X, y, SVC(kernel='rbf', probability=True, random_state=seed), self.param_grid)
+        self.parameters = parameters
+        if 'parameters_grid' not in self.parameters:
+            self.parameters['parameters_grid'] = self.param_grid
 
-    def train(self, enable_parameter_search=False):
+        Model.__init__(self, parameters, SVC(kernel='rbf', probability=True, random_state=self.parameters['seed']))
+
+    def train(self):
         """
         Used for training the model, it just calls to the method in the superclass.
         """
-        return super().train(enable_parameter_search)
+        return super().train()

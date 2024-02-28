@@ -76,9 +76,11 @@ class PreprocessingPipeline:
         # TODO
 
         # Concatenate both dataframes
+        index = self.dataframe.index
         self.dataframe = pd.concat(
             [self.numerical_data.reset_index(drop=True), self.categorical_data.reset_index(drop=True)], axis=1)
 
+        self.dataframe.index = index
         self.dataframe = self.dataframe.dropna()
 
         # Feature selection
@@ -91,7 +93,7 @@ class PreprocessingPipeline:
             self.dataframe = feature_selector.select_features()
 
         if 'seed' not in self.parameters or not self.parameters['seed']:
-            self.parameters['seed'] = random.randint(1, 9999)
+            self.parameters['seed'] = random.randint(1, 999999)
 
         if self.parameters['evaluation_technique'] == 'train_test':
             X_train, X_test, y_train, y_test = train_test_split(self.dataframe.drop(self.parameters['target'], axis=1),

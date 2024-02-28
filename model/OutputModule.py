@@ -29,6 +29,7 @@ class Output:
         del self.parameters['y_train']
         del self.parameters['y_test']
         del self.parameters['dataframe']
+        del self.parameters['parameters_grid']
 
         if self.parameters['evaluation_technique'] != 'bootstrap':
             for key, value in self.parameters['evaluation_results'].items():

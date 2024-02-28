@@ -33,27 +33,27 @@ class Train:
 
         """
         if self.parameters['model'] == 'logistic_regression':
-            model = LogisticRegression(self.parameters['X_train'], self.parameters['y_train'], self.parameters['seed'])
-            model = model.train(self.parameters['enable_parameter_search'])
+            model = LogisticRegression(self.parameters)
+            model = model.train()
             best_params = model.best_params_
 
         elif self.parameters['model'] == 'random_forest':
-            model = RandomForest(self.parameters['X_train'], self.parameters['y_train'], self.parameters['seed'])
+            model = RandomForest(self.parameters)
             model = model.train()
             best_params = model.best_params_
 
         elif self.parameters['model'] == 'xgboost':
-            model = XGBoost(self.parameters['X_train'], self.parameters['y_train'], self.parameters['seed'])
+            model = XGBoost(self.parameters)
             model = model.train()
             best_params = model.best_params_
 
         elif self.parameters['model'] == 'rbf_svm':
-            model = RBF_SVM(self.parameters['X_train'], self.parameters['y_train'], self.parameters['seed'])
+            model = RBF_SVM(self.parameters)
             model = model.train()
             best_params = model.best_params_
 
         elif self.parameters['model'] == 'gradient_descent':
-            model = GradientDescent(self.parameters['X_train'], self.parameters['y_train'], self.parameters['seed'])
+            model = GradientDescent(self.parameters)
             model = model.train()
             best_params = model.best_params_
 

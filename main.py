@@ -11,7 +11,7 @@ from preprocessing.PreprocessingPipeline import PreprocessingPipeline
 def exception_control(parameters):
     valid_parameters = ['target', 'features', 'scaler', 'encoder', 'class_balancer', 'evaluation_technique',
                         'model', 'enable_parameter_search', 'splitting_runs', 'bootstrap_runs', 'output_file',
-                        'num_features', 'feature_selector']
+                        'num_features', 'feature_selector', 'parameters_grid']
 
     valid_scalers = ['min_max', 'z_score']
     valid_encoders = ['one_hot', 'target_encoding']
@@ -103,7 +103,7 @@ def main():
     # We read the data from our first parameter
     try:
         # We read our data from the path extracted from arg1
-        dataframe = pd.read_csv(arg1, index_col=0)
+        dataframe = pd.read_csv(arg1)
     except (ValueError, SyntaxError):
         raise ValueError("Data has to be in a comma separated csv format")
 
