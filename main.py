@@ -11,7 +11,7 @@ from preprocessing.PreprocessingPipeline import PreprocessingPipeline
 def exception_control(parameters):
     valid_parameters = ['target', 'features', 'scaler', 'encoder', 'class_balancer', 'evaluation_technique',
                         'model', 'enable_parameter_search', 'splitting_runs', 'bootstrap_runs', 'output_file',
-                        'num_features', 'feature_selector', 'parameters_grid']
+                        'num_features', 'feature_selector', 'parameters_grid', 'plot_mean_roc', 'roc_color']
 
     valid_scalers = ['min_max', 'z_score']
     valid_encoders = ['one_hot', 'target_encoding']

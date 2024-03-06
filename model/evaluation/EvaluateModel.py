@@ -114,18 +114,27 @@ class EvaluateModel:
         interp_tpr_values = [interp1d(fpr, tpr, kind='linear', fill_value='extrapolate')(mean_fpr) for fpr, tpr in
                              zip(fpr_values, tpr_values)]
 
-        for index, row in metrics_df.iterrows():
-            tpr = row['tpr']
-            fpr = row['fpr']
+        if not self.parameters['plot_mean_roc']:
+            linestyle = '--'
+            for index, row in metrics_df.iterrows():
+                tpr = row['tpr']
+                fpr = row['fpr']
 
-            plt.plot(fpr, tpr, lw=1, color='grey')
+                plt.plot(fpr, tpr, lw=1, color='grey')
+        else:
+            linestyle = 'solid'
 
         mean_tpr = np.mean(interp_tpr_values, axis=0)
 
         if overoptimistic_auc != 0:
             averaged_auc = overoptimistic_auc - averaged_auc
 
-        plt.plot(mean_fpr, mean_tpr, color='red', lw=2, linestyle='--',
+        if self.parameters['roc_color']:
+            color = self.parameters['roc_color']
+        else:
+            color = 'red'
+
+        plt.plot(mean_fpr, mean_tpr, color=color, lw=2, linestyle=linestyle,
                  label='Averaged AUC: ' + str(round(averaged_auc, 2)))
 
         plt.xlabel('1 - Specificity (FPR)')
