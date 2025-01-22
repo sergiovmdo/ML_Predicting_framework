@@ -50,33 +50,37 @@ class EvaluateModel:
     """
     Superclass for the different evaluation techniques implemented in the pipeline, contains all the common methods
     """
-    def instantiate_model(self, X_train, y_train, model_type, params):
+    def instantiate_model(self, X_train, y_train, model_type, params=None):
         """
         Fits the model to the data passed as parameters and retrieves the feature importances
 
         Args:
             X_train (dataframe): Training data.
-            y_train (array): target data.
-            model_type (string): model to be instantiated.
-            params (dictionary): dictionary containing the optimized hyperparameters of the model
+            y_train (array): Target data.
+            model_type (string): Model to be instantiated.
+            params (dictionary, optional): Dictionary containing the optimized hyperparameters of the model. Defaults to None.
 
         Returns:
             The fitted model and a dictionary containing the feature importances.
         """
-        if model_type == 'xgboost':
-            model = xgb.XGBClassifier(**params)
-        elif model_type == 'random_forest':
-            model = RandomForestClassifier(**params)
-        elif model_type == 'logistic_regression':
-            model = LogisticRegression(**params)
-        elif model_type == 'rbf_svm':
-            model = SVC(kernel='rbf', probability=True, **params)
-        elif model_type == 'gradient_descent':
-            model = SGDClassifier(**params)
+        model_mapping = {
+            'xgboost': xgb.XGBClassifier,
+            'random_forest': RandomForestClassifier,
+            'logistic_regression': LogisticRegression,
+            'rbf_svm': lambda **kwargs: SVC(kernel='rbf', probability=True, **kwargs),
+            'gradient_descent': SGDClassifier
+        }
+
+        if model_type not in model_mapping:
+            raise ValueError(f"Unsupported model type: {model_type}")
+
+        # Instantiate the model with default parameters if params is None
+        model_class = model_mapping[model_type]
+        model = model_class(**(params or {}))
 
         model.fit(X_train, y_train)
 
-        feature_names = self.parameters['X_train'].columns.tolist()
+        feature_names = X_train.columns.tolist()
         feature_importances = get_feature_importances(model, model_type, feature_names)
 
         return model, feature_importances

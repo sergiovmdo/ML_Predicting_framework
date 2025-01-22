@@ -1,6 +1,6 @@
 from sklearn.model_selection import GridSearchCV
 import numpy as np
-
+import xgboost
 
 class Model:
     """
@@ -23,9 +23,7 @@ class Model:
         self.X = self.parameters['X_train']
         self.y = self.parameters['y_train']
         self.model = model
-        self.param_grid = self.parameters['parameters_grid']
         self.best_score = 0.0
-        self.enable_grid_modification = self.parameters['enable_parameter_search']
 
     def train(self):
         """
@@ -36,26 +34,28 @@ class Model:
             The trained grid search that contains the feature importances, best score, best hyperparameters,
             among other important parameters.
         """
-        min_class_samples = np.min(np.bincount(self.y))
-        n_splits = min(15, min_class_samples)
 
-        grid_search = GridSearchCV(self.model, self.param_grid, cv=n_splits, scoring='roc_auc', n_jobs=-1, verbose=1)
-        grid_search.fit(self.X, self.y)
+        if "parameters_grid" in self.parameters:
+            min_class_samples = np.min(np.bincount(self.y))
+            n_splits = min(15, min_class_samples)
 
-        if not self.enable_grid_modification:
+            grid_search = GridSearchCV(
+                estimator=self.model,  # Ensure self.model is XGBClassifier or compatible
+                param_grid=self.parameters["parameters_grid"],
+                cv=n_splits,
+                scoring="roc_auc",
+                n_jobs=-1,
+                verbose=1
+            )
+            grid_search.fit(self.X, self.y)
+
             return grid_search
-        # New grid search is not improving the score
-        elif round(grid_search.best_score_, 2) < round(self.best_score, 2):
-            return self.grid_search
+
         else:
-            self.grid_search = grid_search
+            self.model.fit(self.X, self.y)
+            return self.model
 
-            self.best_score = grid_search.best_score_
-            self.best_parameters = grid_search.best_params_
-
-            self.modify_grid_params()
-            return self.train()
-
+    ## Code for modifying parameters grid during execution time ##
     def generate_interval(self, x, y, n):
         """
         Generates an interval between x and y [x,y] of size n

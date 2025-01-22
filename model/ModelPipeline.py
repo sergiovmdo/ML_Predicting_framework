@@ -26,9 +26,7 @@ class ModelPipeline:
         """
         # We instantiate the training pipeline and we train the model
         training_pipeline = Train(self.parameters)
-        model, best_params = training_pipeline.train()
-
-        self.parameters['best_params'] = best_params
+        model = training_pipeline.train()
 
         # We collect all the evaluation metrics from the trained model
         evaluation_pipeline = EvaluationPipeline(model, self.parameters)
