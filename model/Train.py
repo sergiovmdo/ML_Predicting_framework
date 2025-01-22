@@ -3,6 +3,7 @@ from model.models.LogisticRegression import LogisticRegression
 from model.models.RBF_SVM import RBF_SVM
 from model.models.RandomForest import RandomForest
 from model.models.XGBoost import XGBoost
+from sklearn.model_selection import GridSearchCV
 
 
 class Train:
@@ -23,38 +24,36 @@ class Train:
 
     def train(self):
         """
-        Performs the training step which varies depending on the type of model that we will be using.
+        Performs the training step, which varies depending on the type of model specified in the parameters.
 
         Returns:
-            model (object): trained model.
-            feature_importances (dictionary): dictionary containing all the features used for training the model along
-                                              with its respective coefficients.
-            best_params (dictionary): dictionary containing the best hyperparameters for this model.
-
+            model (object): Trained model.
+            feature_importances (dictionary): Dictionary containing all the features used for training the model along
+                                               with its respective coefficients (if applicable).
+            best_params (dictionary): Dictionary containing the best hyperparameters for this model.
         """
-        if self.parameters['model'] == 'logistic_regression':
-            model = LogisticRegression(self.parameters)
-            model = model.train()
-            best_params = model.best_params_
+        model_mapping = {
+            'logistic_regression': LogisticRegression,
+            'random_forest': RandomForest,
+            'xgboost': XGBoost,
+            'rbf_svm': RBF_SVM,
+            'gradient_descent': GradientDescent
+        }
 
-        elif self.parameters['model'] == 'random_forest':
-            model = RandomForest(self.parameters)
-            model = model.train()
-            best_params = model.best_params_
+        model_type = self.parameters.get('model')
 
-        elif self.parameters['model'] == 'xgboost':
-            model = XGBoost(self.parameters)
-            model = model.train()
-            best_params = model.best_params_
+        if model_type not in model_mapping:
+            raise ValueError(f"Unsupported model type: {model_type}")
 
-        elif self.parameters['model'] == 'rbf_svm':
-            model = RBF_SVM(self.parameters)
-            model = model.train()
-            best_params = model.best_params_
+        # Initialize and train the model
+        model_class = model_mapping[model_type]
+        model = model_class(self.parameters)
+        model = model.train()
 
-        elif self.parameters['model'] == 'gradient_descent':
-            model = GradientDescent(self.parameters)
-            model = model.train()
-            best_params = model.best_params_
+        # Retrieve the best parameters if the model supports it
+        self.parameters['best_params'] = (model.best_params_
+                                          if hasattr(model, 'best_params_') else
+                                          model.get_params())
 
-        return model, best_params
+        return model
+

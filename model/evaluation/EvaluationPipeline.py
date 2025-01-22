@@ -1,5 +1,4 @@
 from model.evaluation.BootstrapPoint632 import BootstrapPoint632
-from model.evaluation.InternalValidation import InternalValidation
 from model.evaluation.TrainTest import TrainTest
 
 
@@ -30,10 +29,6 @@ class EvaluationPipeline:
 
         if self.parameters['evaluation_technique'] == 'train_test':
             evaluation = TrainTest(self.parameters, self.model)
-
-            return evaluation.evaluate()
-        elif self.parameters['evaluation_technique'] == 'bootstrap':
-            evaluation = InternalValidation(self.parameters, self.model)
             return evaluation.evaluate()
         elif self.parameters['evaluation_technique'] == '.632+':
             evaluation = BootstrapPoint632(self.parameters)
