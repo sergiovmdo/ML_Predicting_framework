@@ -33,7 +33,7 @@ class DataCleaner:
             The cleaned dataframe.
         """
         if 'imputer' in self.parameters and self.parameters['imputer']:
-            self.dataframe = self.impute(self.parameters['imputer'])
+            self.dataframe = self.impute(self.parameters)
 
         return self.dataframe
 
@@ -43,7 +43,7 @@ class DataCleaner:
         """
         self.dataframe = self.dataframe.drop_duplicates()
 
-    def impute(self, imputation_technique):
+    def impute(self, parameters):
         """
         Calls the imputer in order to perform the imputation.
 
@@ -53,4 +53,4 @@ class DataCleaner:
         Returns:
             The imputed dataframe.
         """
-        return self.imputer.impute(self.dataframe, imputation_technique)
+        return self.imputer.impute(self.dataframe, parameters)

@@ -1,3 +1,4 @@
+import os
 import random
 from sklearn.model_selection import train_test_split
 from model.evaluation.EvaluateModel import EvaluateModel
@@ -63,6 +64,10 @@ class TrainTest(EvaluateModel):
 
         self.parameters['feature_importances'] = sorted_feature_importances
 
-        self.plot_roc(roc_curves_df, average_dict['auc'])
+        self.plot_roc(roc_curves_df, average_dict['auc'], self.parameters['output_folder'])
+
+        # Save metrics_df
+        output_dir = os.path.join(self.parameters['output_folder'], "full_metrics_df.csv")
+        metrics_df.to_csv(output_dir)
 
         return average_dict

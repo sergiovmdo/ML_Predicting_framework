@@ -4,58 +4,69 @@ import time
 import json
 import copy
 
+import os
+
+# Adjust path for xgboost DLLs
+if getattr(sys, 'frozen', False):  # If running from a PyInstaller EXE
+    base_path = sys._MEIPASS
+    os.environ["PATH"] = os.pathsep.join([
+        os.path.join(base_path, "xgboost", "lib"),
+        os.environ["PATH"]
+    ])
+
 from model.ModelPipeline import ModelPipeline
 from preprocessing.PreprocessingPipeline import PreprocessingPipeline
 
 
 def exception_control(parameters):
-    valid_parameters = ['target', 'features', 'scaler', 'encoder', 'class_balancer', 'evaluation_technique',
-                        'model', 'enable_parameter_search', 'splitting_runs', 'bootstrap_runs', 'output_file',
-                        'num_features', 'feature_selector', 'parameters_grid', 'plot_mean_roc', 'roc_color']
+    valid_parameters = [
+        'target', 'features', 'imputer', 'scaler', 'encoder', 'class_balancer', 'evaluation_technique',
+        'model', 'enable_parameter_search', 'splitting_runs', 'bootstrap_runs', 'output_folder',
+        'num_features', 'feature_selector', 'parameters_grid', 'plot_mean_roc', 'roc_color'
+    ]
 
-    valid_scalers = ['min_max', 'z_score']
-    valid_encoders = ['one_hot', 'target_encoding']
-    valid_balancers = ['smote', 'random_oversampling']
-    valid_evaluation_techniques = ['train_test', 'bootstrap', '.632+']
-    valid_models = ['logistic_regression', 'random_forest', 'xgboost', 'rbf_svm', 'gradient_descent']
+    valid_values = {
+        'scaler': ['min_max', 'z_score'],
+        'encoder': ['one_hot', 'target_encoding'],
+        'class_balancer': ['smote', 'random_oversampling'],
+        'imputer': ['simple_imputer'],
+        'evaluation_technique': ['train_test', 'bootstrap', '.632+'],
+        'model': ['logistic_regression', 'random_forest', 'xgboost', 'rbf_svm', 'gradient_descent']
+    }
+
+    type_checks = {
+        'target': str,
+        'features': (list, str),  # Allow list or empty string
+        'imputer': str,  # Specific validation will be done later
+        'scaler': str,  # Specific validation will be done later
+        'encoder': str,  # Specific validation will be done later
+        'class_balancer': str,  # Specific validation will be done later
+        'evaluation_technique': str,  # Specific validation will be done later
+        'model': str,  # Specific validation will be done later
+        'enable_parameter_search': bool,
+        'splitting_runs': int,
+        'bootstrap_runs': int,
+        'output_folder': str,
+        'num_features': int,
+        'feature_selector': str,  # No specific validation for now
+        'parameters_grid': dict,  # Typically a dictionary for grid search
+        'plot_mean_roc': bool,
+        'roc_color': str  # Optional string for color
+    }
 
     for k, v in parameters.items():
         if k not in valid_parameters:
-            raise ValueError("This parameter name is not valid: {}".format(k))
+            raise ValueError(f"This parameter name is not valid: {k}")
 
-        if k == valid_parameters[0]:
-            if not isinstance(v, str):
-                raise TypeError("Parameter: {} has to be a string".format(str(k)))
-        elif k == valid_parameters[1]:
-            if not isinstance(v, list) and v != '':
-                raise TypeError("Parameter: {} has to be a list or the empty string".format(str(k)))
-        elif k == valid_parameters[2]:
-            if v not in valid_scalers and v != '':
-                raise ValueError("The scaler is not available, the implemented scalers keys are: {}".format(", ".join(valid_scalers)))
-        elif k == valid_parameters[3]:
-            if v not in valid_encoders and v != '':
-                raise ValueError("The encoder is not available, the implemented encoders keys are: {}".format(", ".join(valid_encoders)))
-        elif k == valid_parameters[4]:
-            if v not in valid_balancers and v != '':
-                raise ValueError("The balancer is not available, the implemented balancer keys are: {}".format(", ".join(valid_balancers)))
-        elif k == valid_parameters[5]:
-            if v not in valid_evaluation_techniques and v != '':
-                raise ValueError("The evaluation is not available, the implemented evaluation keys are: {}".format(", ".join(valid_evaluation_techniques)))
-        elif k == valid_parameters[6]:
-            if v not in valid_models and v != '':
-                raise ValueError("The model is not available, the implemented model keys are: {}".format(", ".join(valid_models)))
-        elif k == valid_parameters[7]:
-            if not isinstance(v, bool):
-                raise TypeError("Parameter: {} has to be a boolean".format(str(k)))
-        elif k == valid_parameters[8]:
-            if not isinstance(v, int):
-                raise TypeError("Parameter: {} has to be an integer".format(str(k)))
-        elif k == valid_parameters[9]:
-            if not isinstance(v, int):
-                raise TypeError("Parameter: {} has to be an integer".format(str(k)))
-        elif k == valid_parameters[10]:
-            if not isinstance(v, str):
-                raise TypeError("Parameter: {} has to be a string".format(str(k)))
+        # Type validation
+        expected_type = type_checks.get(k)
+        if expected_type and not isinstance(v, expected_type) and v != '':
+            raise TypeError(f"Parameter '{k}' must be of type {expected_type.__name__}.")
+
+        # Specific value validation
+        if k in valid_values and v not in valid_values[k] and v != '':
+            valid_options = ", ".join(valid_values[k])
+            raise ValueError(f"Invalid value for parameter '{k}'. Valid options are: {valid_options}.")
 
 
 def generate_combinations(json_obj, current_combination, combinations_list):
@@ -100,6 +111,11 @@ def main():
     except (ValueError, SyntaxError):
         raise ValueError("Could not convert the parameters file to a dictionary.")
 
+    # Ensure the output directory exists before running the pipeline
+    output_folder = parameters['output_folder']
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
     # We read the data from our first parameter
     try:
         # We read our data from the path extracted from arg1
@@ -127,7 +143,9 @@ def main():
         aux = model_pipeline.run()
         output_dataframe = pd.concat([output_dataframe, aux], ignore_index=True)
 
-    output_dataframe.T.to_csv(parameters['output_file'])
+    # Save the output dataframe to the specified folder
+    output_path = os.path.join(output_folder, "output_dataframe.csv")
+    output_dataframe.T.to_csv(output_path)
 
 
 if __name__ == "__main__":

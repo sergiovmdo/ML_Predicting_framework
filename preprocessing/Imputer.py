@@ -7,7 +7,7 @@ class Imputer():
     Class that is in charge of imputing null values existing in our original data.
     """
 
-    def impute(self, dataframe, technique):
+    def impute(self, dataframe, parameters):
         """
         Main method that is in charge of invoke the appropiate imputing technique.
 
@@ -18,23 +18,33 @@ class Imputer():
         Returns:
             The imputed dataframe.
         """
-        if technique == 'simple_imputer':
-            return self.simple_imputer(dataframe)
+        if parameters['imputer'] == 'simple_imputer':
+            return self.simple_imputer(dataframe, parameters['target'])
 
         else:
             return dataframe
 
-    def simple_imputer(self, dataframe):
+    def simple_imputer(self, dataframe, target):
         """
-        Implementation of mean imputation
+        Implementation of mean imputation for non-target columns
+        and mode (most frequent) imputation for the target column.
 
         Args:
             dataframe (dataframe): Data.
+            target (str): The target column name.
 
         Returns:
-            The imputed dataframe.
+            pd.DataFrame: The imputed dataframe.
         """
-        imputer = SimpleImputer(strategy='mean')
-        imputed_df = imputer.fit_transform(dataframe)
+        # Separate target and non-target columns
+        non_target_cols = dataframe.columns.difference([target])
 
-        return pd.DataFrame(imputed_df, columns=dataframe.columns)
+        # Impute non-target columns with mean
+        mean_imputer = SimpleImputer(strategy='mean')
+        dataframe[non_target_cols] = mean_imputer.fit_transform(dataframe[non_target_cols])
+
+        # Impute target column with the most frequent value
+        mode_imputer = SimpleImputer(strategy='most_frequent')
+        dataframe[[target]] = mode_imputer.fit_transform(dataframe[[target]])
+
+        return dataframe

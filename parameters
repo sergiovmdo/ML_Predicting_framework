@@ -15,6 +15,7 @@
   "num_features": 5,
   "encoder": "one_hot",
   "class_balancer": "",
+  "imputer": "simple_imputer",
   "evaluation_technique": "train_test",
   "model": "logistic_regression",
   "enable_parameter_search": false,
@@ -32,5 +33,5 @@
       "l2"
     ]
   },
-  "output_file": "test.csv"
+  "output_folder": "test"
 }
