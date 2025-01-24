@@ -1,3 +1,5 @@
+import os
+
 from scipy.interpolate import interp1d
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, auc, roc_curve
 from sklearn.linear_model import LogisticRegression
@@ -85,15 +87,16 @@ class EvaluateModel:
 
         return model, feature_importances
 
-    def plot_roc(self, metrics_df, averaged_auc, overoptimistic_auc=0, overoptimistic_curve=[]):
+    def plot_roc(self, metrics_df, averaged_auc, output_path, overoptimistic_auc=0, overoptimistic_curve=[]):
         """
         Creates the roc curve plot
 
         Args:
             metrics_df (dataframe): The dataframe containing all the metrics.
             averaged_auc (float): the mean Area Under the Curve of the different runs.
-            overoptimistic_auc (float): the
-            params (dictionary): dictionary containing the optimized hyperparameters of the model
+            output_path (string): Path to the output directory.
+            overoptimistic_auc (float): the overoptimistic AUC value.
+
 
         Returns:
             The fitted model and a dictionary containing the feature importances.
@@ -146,7 +149,9 @@ class EvaluateModel:
         plt.title('Receiver Operating Characteristic (ROC) Curve')
         plt.legend(loc='lower right')
 
-        plt.savefig('roc.pdf')
+        output_dir = os.path.join(output_path, "roc.pdf")
+        plt.savefig(output_dir)
+
 
     def compute_metrics(self, y_true, y_pred, y_pred_proba):
         """

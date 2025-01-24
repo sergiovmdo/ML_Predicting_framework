@@ -1,6 +1,6 @@
 from sklearn.model_selection import GridSearchCV
 import numpy as np
-import xgboost
+from joblib import parallel_backend
 
 class Model:
     """
@@ -39,17 +39,18 @@ class Model:
             min_class_samples = np.min(np.bincount(self.y))
             n_splits = min(15, min_class_samples)
 
-            grid_search = GridSearchCV(
-                estimator=self.model,  # Ensure self.model is XGBClassifier or compatible
-                param_grid=self.parameters["parameters_grid"],
-                cv=n_splits,
-                scoring="roc_auc",
-                n_jobs=-1,
-                verbose=1
-            )
-            grid_search.fit(self.X, self.y)
+            with parallel_backend("threading"):
+                grid_search = GridSearchCV(
+                    estimator=self.model,
+                    param_grid=self.parameters["parameters_grid"],
+                    cv=n_splits,
+                    scoring="roc_auc",
+                    n_jobs=-1,  # Still uses threading for parallelism
+                    verbose=1
+                )
+                grid_search.fit(self.X, self.y)
 
-            return grid_search
+                return grid_search
 
         else:
             self.model.fit(self.X, self.y)

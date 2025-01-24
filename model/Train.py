@@ -3,7 +3,6 @@ from model.models.LogisticRegression import LogisticRegression
 from model.models.RBF_SVM import RBF_SVM
 from model.models.RandomForest import RandomForest
 from model.models.XGBoost import XGBoost
-from sklearn.model_selection import GridSearchCV
 
 
 class Train:
