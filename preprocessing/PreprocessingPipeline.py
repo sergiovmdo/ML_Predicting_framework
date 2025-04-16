@@ -96,14 +96,17 @@ class PreprocessingPipeline:
             self.parameters['seed'] = random.randint(1, 999999)
 
         if self.parameters['evaluation_technique'] == 'train_test':
+            if 'test_size' not in self.parameters or not self.parameters['test_size']:
+                self.parameters['test_size'] = 0.3
+
             X_train, X_test, y_train, y_test = train_test_split(self.dataframe.drop(self.parameters['target'], axis=1),
-                                                                self.dataframe[self.parameters['target']], test_size=0.3,
+                                                                self.dataframe[self.parameters['target']], test_size=self.parameters['test_size'],
                                                                 random_state=self.parameters['seed'])
         else:
             X_train = self.dataframe.drop(self.parameters['target'], axis=1)
             y_train = self.dataframe[self.parameters['target']]
 
-            X_test = 0
+            X_test = 0 
             y_test = 0
 
         if 'class_balancer' in self.parameters and self.parameters['class_balancer']:

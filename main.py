@@ -22,15 +22,15 @@ def exception_control(parameters):
     valid_parameters = [
         'target', 'features', 'imputer', 'scaler', 'encoder', 'class_balancer', 'evaluation_technique',
         'model', 'enable_parameter_search', 'splitting_runs', 'bootstrap_runs', 'output_folder',
-        'num_features', 'feature_selector', 'parameters_grid', 'plot_mean_roc', 'roc_color'
+        'num_features', 'feature_selector', 'parameters_grid', 'plot_mean_roc', 'roc_color', 'test_size'
     ]
 
     valid_values = {
         'scaler': ['min_max', 'z_score'],
         'encoder': ['one_hot', 'target_encoding'],
-        'class_balancer': ['smote', 'random_oversampling'],
+        'class_balancer': ['smote', 'random_oversampling', 'random_undersampling'],
         'imputer': ['simple_imputer'],
-        'evaluation_technique': ['train_test', 'bootstrap', '.632+'],
+        'evaluation_technique': ['train_test', '.632+'],
         'model': ['logistic_regression', 'random_forest', 'xgboost', 'rbf_svm', 'gradient_descent']
     }
 
@@ -48,6 +48,7 @@ def exception_control(parameters):
         'bootstrap_runs': int,
         'output_folder': str,
         'num_features': int,
+        'test_size': float,
         'feature_selector': str,  # No specific validation for now
         'parameters_grid': dict,  # Typically a dictionary for grid search
         'plot_mean_roc': bool,

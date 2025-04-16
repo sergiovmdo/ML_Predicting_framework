@@ -1,4 +1,5 @@
 from imblearn.over_sampling import SMOTE, RandomOverSampler
+from imblearn.under_sampling import RandomUnderSampler
 
 
 class ClassBalancer:
@@ -33,6 +34,8 @@ class ClassBalancer:
             return self.transform(SMOTE(random_state=self.seed))
         elif self.technique == 'random_oversampling':
             return self.transform(RandomOverSampler(random_state=self.seed))
+        elif self.technique == 'random_undersampling':
+            return self.transform(RandomUnderSampler(random_state=self.seed))
 
         else:
             return self.dataframe

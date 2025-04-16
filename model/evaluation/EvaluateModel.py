@@ -87,30 +87,60 @@ class EvaluateModel:
 
         return model, feature_importances
 
+
     def plot_roc(self, metrics_df, averaged_auc, output_path, overoptimistic_auc=0, overoptimistic_curve=[]):
         """
-        Creates the roc curve plot
+        Creates the ROC curve plot.
 
         Args:
-            metrics_df (dataframe): The dataframe containing all the metrics.
-            averaged_auc (float): the mean Area Under the Curve of the different runs.
-            output_path (string): Path to the output directory.
-            overoptimistic_auc (float): the overoptimistic AUC value.
-
+            metrics_df (DataFrame): The dataframe containing all the metrics.
+            averaged_auc (float): The mean Area Under the Curve of the different runs.
+            output_path (str): Path to the output directory.
+            overoptimistic_auc (float): The overoptimistic AUC value.
+            overoptimistic_curve (list): [fpr, tpr] for an overoptimistic ROC curve (optional).
 
         Returns:
-            The fitted model and a dictionary containing the feature importances.
+            None
         """
+
         plt.figure(figsize=(8, 8))
 
         if overoptimistic_curve:
-            plt.plot(overoptimistic_curve[0], overoptimistic_curve[1], color='navy', lw=2, linestyle='dotted',
-                     label='Overoptimistic AUC: ' + str(round(overoptimistic_auc, 2)))
+            plt.plot(
+                overoptimistic_curve[0],
+                overoptimistic_curve[1],
+                color='navy',
+                lw=2,
+                linestyle='dotted',
+                label='Overoptimistic AUC: ' + str(round(overoptimistic_auc, 2))
+            )
 
         tpr_values = metrics_df['tpr'].tolist()
         fpr_values = metrics_df['fpr'].tolist()
 
-        # Find the minimum and maximum false positive rates across all runs
+        # -- Fix each run's ROC to start at (0,0), ensure sorted FPR, and replace NaNs --
+        for i in range(len(fpr_values)):
+            fpr = np.array(fpr_values[i], dtype=float)
+            tpr = np.array(tpr_values[i], dtype=float)
+
+            # If empty or not starting at (0,0), insert it
+            if fpr.size == 0 or fpr[0] != 0.0 or tpr[0] != 0.0:
+                fpr = np.insert(fpr, 0, 0.0)
+                tpr = np.insert(tpr, 0, 0.0)
+
+            # Sort by ascending FPR to avoid interpolation issues
+            sorted_idx = np.argsort(fpr)
+            fpr = fpr[sorted_idx]
+            tpr = tpr[sorted_idx]
+
+            # Replace NaNs with 0.0
+            fpr = np.nan_to_num(fpr, nan=0.0)
+            tpr = np.nan_to_num(tpr, nan=0.0)
+
+            fpr_values[i] = fpr.tolist()
+            tpr_values[i] = tpr.tolist()
+
+        # Find the minimum and maximum false-positive rates across all runs
         min_fpr = min(np.min(run_fpr) for run_fpr in fpr_values)
         max_fpr = max(np.max(run_fpr) for run_fpr in fpr_values)
 
@@ -118,32 +148,54 @@ class EvaluateModel:
         mean_fpr = np.linspace(min_fpr, max_fpr, 100)
 
         # Interpolate individual ROC curves to the common set of mean_fpr values
-        interp_tpr_values = [interp1d(fpr, tpr, kind='linear', fill_value='extrapolate')(mean_fpr) for fpr, tpr in
-                             zip(fpr_values, tpr_values)]
+        interp_tpr_values = [
+            interp1d(fpr, tpr, kind='linear', bounds_error=False, fill_value='extrapolate')(mean_fpr)
+            for fpr, tpr in zip(fpr_values, tpr_values)
+        ]
 
+        # Plot all runs if plot_mean_roc is False, otherwise only do the mean curve
         if not self.parameters['plot_mean_roc']:
             linestyle = '--'
             for index, row in metrics_df.iterrows():
                 tpr = row['tpr']
                 fpr = row['fpr']
-
                 plt.plot(fpr, tpr, lw=1, color='grey')
         else:
             linestyle = 'solid'
 
-        mean_tpr = np.mean(interp_tpr_values, axis=0)
-
+        # Adjust the displayed AUC if there's an "overoptimistic" value
         if overoptimistic_auc != 0:
             averaged_auc = overoptimistic_auc - averaged_auc
 
-        if self.parameters['roc_color']:
-            color = self.parameters['roc_color']
-        else:
-            color = 'red'
+        # Choose color if set
+        color = self.parameters['roc_color'] if self.parameters['roc_color'] else 'red'
 
-        plt.plot(mean_fpr, mean_tpr, color=color, lw=2, linestyle=linestyle,
-                 label='Averaged AUC: ' + str(round(averaged_auc, 2)))
+        interp_tpr_values = np.array(interp_tpr_values, dtype=float)
+        interp_tpr_values = np.nan_to_num(interp_tpr_values, nan=0.0)
+        mean_tpr = np.mean(interp_tpr_values, axis=0)
+        calculated_auc = np.trapz(mean_tpr, mean_fpr)
 
+        self.parameters['AUC_Integral'] = calculated_auc
+
+        # Plot the mean ROC curve
+        plt.plot(
+            mean_fpr,
+            mean_tpr,
+            color=color,
+            lw=2,
+            linestyle=linestyle,
+            label='Averaged AUC: ' + str(round(averaged_auc, 2))
+        )
+
+        # -----------------------------------------------------
+        # Add the diagonal "chance" line
+        plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle=':', label='Chance')
+
+        padding = 0.05
+        plt.xlim([-padding, 1 + padding])
+        plt.ylim([-padding, 1 + padding])
+        # -----------------------------------------------------
+        plt.grid(True)
         plt.xlabel('1 - Specificity (FPR)')
         plt.ylabel('Sensitivity (TPR)')
         plt.title('Receiver Operating Characteristic (ROC) Curve')
@@ -151,7 +203,6 @@ class EvaluateModel:
 
         output_dir = os.path.join(output_path, "roc.pdf")
         plt.savefig(output_dir)
-
 
     def compute_metrics(self, y_true, y_pred, y_pred_proba):
         """
