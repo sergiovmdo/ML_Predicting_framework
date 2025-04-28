@@ -99,9 +99,15 @@ class PreprocessingPipeline:
             if 'test_size' not in self.parameters or not self.parameters['test_size']:
                 self.parameters['test_size'] = 0.3
 
-            X_train, X_test, y_train, y_test = train_test_split(self.dataframe.drop(self.parameters['target'], axis=1),
-                                                                self.dataframe[self.parameters['target']], test_size=self.parameters['test_size'],
-                                                                random_state=self.parameters['seed'])
+            y_to_split = self.dataframe[self.parameters['target']]
+
+            X_train, X_test, y_train, y_test = train_test_split(
+                self.dataframe.drop(self.parameters['target'], axis=1),
+                y_to_split,  # Use the variable we just inspected
+                test_size=self.parameters['test_size'],
+                random_state=self.parameters['seed']
+            )
+
         else:
             X_train = self.dataframe.drop(self.parameters['target'], axis=1)
             y_train = self.dataframe[self.parameters['target']]
